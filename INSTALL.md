@@ -2,25 +2,19 @@
 
 ## Typical Installation
 
-	./configure --prefix=/usr --sysconfdir=/etc
+JOE is built with CMake (3.13 or newer), in a build directory separate
+from the source tree:
+
+	cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/usr
 
 		- executables in /usr/bin
-		- man pages in /usr/man
+		- man pages in /usr/share/man
 		- configuration files in /etc/joe
 		- syntax files in /usr/share/joe
 
-	make
+	cmake --build build
 
-	sudo make install
-
-For OS X, use:
-
-	sudo LC_ALL=C make install
-
-(This fixes an issue where sed on OS X is unhappy with binary files and will
-be fixed in the next release of JOE.  If you tried 'make' without the
-LC_ALL=C, you may have to delete the source distribution directory and start
-over).
+	sudo cmake --install build
 
 You may have to delete or update user custom configuration files (otherwise
 new features will not work):
@@ -30,30 +24,6 @@ new features will not work):
 	rm ~/.rjoerc
 	rm ~/.jstarrc
 	rm ~/.jpicorc
-
-## Building with CMake
-
-JOE can also be built out of tree with CMake (3.13 or newer):
-
-	cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/usr
-
-		- configuration files in /etc/joe
-		- syntax files in /usr/share/joe
-
-	cmake --build build
-
-	sudo cmake --install build
-
-Options (pass with -D<option>=<value>):
-
-	JOE_CURSES=OFF		don't search the curses libraries for terminfo
-	JOE_TERMCAP=OFF		don't search the termcap library for terminfo
-	JOE_UNICODE_VERSION	Unicode table to build (default 9.0.0)
-	JOE_BUILD_UTILS=ON	also build the helper programs in joe/util
-
-The CMake build generates autoconf.h in the build directory, so the source
-tree must not contain one from an in-tree ./configure ("make distclean"
-removes it).
 
 ## Mercurial
 
@@ -71,19 +41,7 @@ removes it).
 
 	hg update -C joe-3	Released branch for joe-3.x
 
-### Run autotools to build configure scripts
-
-	./autojoe
-
-	(You might find that you need to install automake and autoconf
-	first).
-
 ## Installation procedure
-
-To create a Cygwin binary distribution, use the 'cygbuild' script
-instead of these instructions.
-
-JOE uses the GNU Automake and Autoconf suites to build itself.
 
 Usually you want JOE to use the terminfo database. JOE needs
 a termcap emulation library to do this.  In modern versions of
@@ -92,51 +50,55 @@ library:
 
 	apt-get install ncurses-dev
 
-Run configure script, type one of these:
+Configure the build directory, type one of these:
 
     Normal installation:
 
-	./configure --prefix=/usr --sysconfdir=/etc
+	cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/usr
 
 		- executables in /usr/bin
-		- man pages in /usr/man
+		- man pages in /usr/share/man
 		- configuration files in /etc/joe
 		- syntax files in /usr/share/joe
 
     Install into your home directory:
 
-	./configure --prefix=$HOME
+	cmake -S . -B build -DCMAKE_INSTALL_PREFIX=$HOME
 
 		- executables in ~/bin
-		- man pages in ~/man
+		- man pages in ~/share/man
 		- configuration files in ~/etc/joe
 		- syntax files in ~/share/joe
 
     Install into /usr/local:
 
-	./configure
+	cmake -S . -B build
 
 		- executables in /usr/local/bin
-		- man pages in /usr/local/man
+		- man pages in /usr/local/share/man
 		- configuration files in /usr/local/etc/joe
 		- syntax files in /usr/local/share/joe
 
 For Cygwin, I've found that you need to add
-  "--disable-curses --disable-termcap" to the above commands.
+  "-DJOE_CURSES=OFF -DJOE_TERMCAP=OFF" to the above commands.
 
 Build JOE, type:
 
-	make
+	cmake --build build
 
 Optionally strip JOE of debugging information:
 
-	strip joe
+	strip build/joe
 
 Install JOE, type one of:
 
-	sudo make install	(system installation)
+	sudo cmake --install build	(system installation)
 
-	make install		(home directory)
+	cmake --install build		(home directory)
+
+To stage the installation somewhere else (for packaging), set DESTDIR:
+
+	DESTDIR=/tmp/stage cmake --install build
 
 Delete or update user custom configuration files (otherwise new features
 will not work):
@@ -163,16 +125,26 @@ xterm 'configure' options:
 file), which allows mouse left and middle button cut & paste to work with
 properly with JOE.
 
-## Common ./configure options
+## Build options
+
+  Options are passed to cmake as -D<option>=<value>:
+
+	JOE_CURSES=OFF		don't search the curses libraries for terminfo
+	JOE_TERMCAP=OFF		don't search the termcap library for terminfo
+	JOE_UNICODE_VERSION	Unicode table to build (default 9.0.0)
+	JOE_BUILD_UTILS=ON	also build the helper programs in joe/util
+
+  The standard CMake variables also apply, for example CMAKE_BUILD_TYPE
+  (default RelWithDebInfo), CMAKE_C_COMPILER and CMAKE_INSTALL_SYSCONFDIR.
 
   To force JOE to use /etc/termcap file using its built-in termcap file parser
   (which is useful if you want to compile JOE so that it doesn't depend on any
   libraries other than libc and libm):
 
-	./configure --disable-curses --disable-termcap
+	cmake -S . -B build -DJOE_CURSES=OFF -DJOE_TERMCAP=OFF
 
-  (--disable-termcap prevents JOE from using the termcap emulation functions
-   in the -ltermcap library.  --disable-curses prevents JOE from using the
+  (JOE_TERMCAP=OFF prevents JOE from using the termcap emulation functions
+   in the -ltermcap library.  JOE_CURSES=OFF prevents JOE from using the
    termcap emulation functions in the -lcurses library).
 
   Otherwise, JOE tries to use the terminfo database via termcap
@@ -186,30 +158,21 @@ properly with JOE.
   compiled for terminfo, it can not use its built-in termcap entry).
 
   Note for MIPS/SGI: to get a 64-bit JOE, do this:
-    CC=cc CFLAGS=-64 ./configure ...
+    CC=cc CFLAGS=-64 cmake -S . -B build ...
 
 ## Maximize warnings
 
-Developers may want to try to maximize compiler warnings from gcc:
+Developers may want to try to maximize compiler warnings from gcc by
+providing CMAKE_C_FLAGS when configuring:
 
-One way is to provide the CFLAGS enviroment variable to configure:
-
-	CFLAGS='-g -Wall -Wconversion -Wunused -Wwrite-strings -Wstrict-overflow=4 -Wmissing-include-dirs -Winit-self -Wundef -Wlogical-op -Wmissing-declarations -Wformat -Wmissing-format-attribute -Wformat-nonliteral -Wformat-security -Wswitch-enum -Wshadow' ./configure ...
-
-Another is to edit CFLAGS in the joe/Makefile:
-
-	CFLAGS = -g -Wall -Wconversion -Wunused -Wwrite-strings \
-	  -Wstrict-overflow=4 -Wmissing-include-dirs -Winit-self -Wcast-qual \
-	  -Wundef -Wlogical-op -Wmissing-declarations -Wformat \
-	  -Wmissing-format-attribute -Wformat-nonliteral \
-	  -Wswitch-enum -Wshadow
+	cmake -S . -B build -DCMAKE_C_FLAGS='-Wall -Wconversion -Wunused -Wwrite-strings -Wstrict-overflow=4 -Wmissing-include-dirs -Winit-self -Wundef -Wlogical-op -Wmissing-declarations -Wformat -Wmissing-format-attribute -Wformat-nonliteral -Wformat-security -Wswitch-enum -Wshadow'
 
 (Try adding -Wextra and -Wformat-security for even more warnings)
 
 It's a good idea to verify that JOE can be compiled with C++.  The C++
 front-end sometimes finds different problems than the C front-end.
 
-	CC = g++
+	cmake -S . -B build-cxx -DCMAKE_C_COMPILER=g++
 
 It's a good idea to see what warnings occur when -m32 is added.  This
 can reveal some conversion warnings.
@@ -402,7 +365,7 @@ attempts to find this file in:
 	/etc/termcap		Normal system termcap file
 
 Joe copies its own termcap file to /usr/local/lib/termcap (or
-wherever the system-wide joerc file is going to go) when 'make install' is
+wherever the system-wide joerc file is going to go) when 'cmake --install' is
 run.
 
 Termcap is better than terminfo because it is a more open standard. 

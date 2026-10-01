@@ -5,14 +5,14 @@
 #   cmake --build build
 #   cmake --install build
 #
-# This mirrors the checks done by configure.ac/acinclude.m4 and generates
-# autoconf.h in the build tree, so the source tree is never written to.
+# The platform checks below generate autoconf.h in the build tree, so the
+# source tree is never written to.
 
 cmake_minimum_required(VERSION 3.13)
 
 project(joe VERSION 4.6 LANGUAGES C)
 
-# Match the autotools default of -g -O2
+# Default to an optimized build with debug info (-g -O2)
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 	set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Build type" FORCE)
 endif()
@@ -25,12 +25,12 @@ include(CheckSymbolExists)
 include(CheckTypeSize)
 include(CheckCSourceRuns)
 
-# An in-tree autotools configure leaves joe/autoconf.h in the source tree,
-# which would shadow the one generated here (config.h includes it with "").
+# A stale joe/autoconf.h in the source tree (left by an old autotools build)
+# would shadow the one generated here (config.h includes it with "").
 if(EXISTS "${PROJECT_SOURCE_DIR}/joe/autoconf.h")
 	message(FATAL_ERROR
-		"${PROJECT_SOURCE_DIR}/joe/autoconf.h exists from an in-tree autotools "
-		"configure. Run 'make distclean' in the source tree first.")
+		"${PROJECT_SOURCE_DIR}/joe/autoconf.h is left over from an old autotools "
+		"build and would shadow the generated header. Delete it first.")
 endif()
 
 #### Options ####
@@ -51,7 +51,7 @@ set(JOE_SYSCONFDIR "${CMAKE_INSTALL_FULL_SYSCONFDIR}/joe")
 set(JOE_DATADIR "${CMAKE_INSTALL_FULL_DATADIR}/joe")
 set(JOE_DOCDIR "${CMAKE_INSTALL_FULL_DOCDIR}")
 
-#### Library search (equivalent of AC_SEARCH_LIBS) ####
+#### Library search ####
 
 # Libraries found by joe_search_libs(); linked into joe.
 set(JOE_LIBS "")
@@ -112,7 +112,7 @@ foreach(header
 	check_include_file(${header} ${var})
 endforeach()
 
-# AC_HEADER_DIRENT: fall back to the older directory headers
+# Fall back to the older directory headers when there is no <dirent.h>
 if(NOT HAVE_DIRENT_H)
 	foreach(header sys/ndir.h sys/dir.h ndir.h)
 		string(TOUPPER "HAVE_${header}" var)
@@ -145,7 +145,7 @@ if(NOT HAVE_POSIX_TERMIOS)
 	endif()
 endif()
 
-# AC_HEADER_TIOCGWINSZ: only needed when <termios.h> doesn't provide it
+# <sys/ioctl.h> is only needed for TIOCGWINSZ when <termios.h> doesn't provide it
 check_symbol_exists(TIOCGWINSZ "sys/types.h;termios.h" JOE_TIOCGWINSZ_IN_TERMIOS)
 if(NOT JOE_TIOCGWINSZ_IN_TERMIOS)
 	check_symbol_exists(TIOCGWINSZ "sys/types.h;sys/ioctl.h" GWINSZ_IN_SYS_IOCTL)
@@ -202,7 +202,7 @@ if(HAVE_LSTAT AND UNIX)
 	set(LSTAT_FOLLOWS_SLASHED_SYMLINK 1)
 endif()
 
-#### Run-time behaviour checks (from acinclude.m4) ####
+#### Run-time behaviour checks ####
 
 if(CMAKE_CROSSCOMPILING)
 	message(WARNING "Cross compiling: assuming defaults for run-time checks")
@@ -293,7 +293,7 @@ configure_file(cmake/autoconf.h.cmake "${PROJECT_BINARY_DIR}/include/autoconf.h"
 
 # joe_substitute(<input> <output>)
 # Replaces the @JOERC@, @JOEDOC@, @JOEDATA@, @SPELL@ and @BINDIR@ placeholders
-# like the sed rules in the Makefile.am files; other text is left untouched.
+# with the install locations; other text is left untouched.
 function(joe_substitute in out)
 	file(READ "${in}" text)
 	string(REPLACE "@JOERC@" "${JOE_SYSCONFDIR}" text "${text}")

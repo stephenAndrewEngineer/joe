@@ -38,11 +38,11 @@ are the same as in WordStar as is the overall feel of the editor.  JOE also
 has some of the key bindings and many of the powerful features of EMACS.</p>
 
 <p>JOE is written in C and its only dependency is libc.  This makes JOE very
-easy to build (just "configure" and "make install"), making it feasible to
+easy to build (just "cmake" and "cmake --install"), making it feasible to
 include on small systems and recovery disks.  The compiled binary is about
 300K in x86.  Note that JOE can use either the termcap or terminfo terminal
 capabilities databases (or a built-in termcap entry for ANSI terminals).  The
-choice is controlled by a "configure" option.  If terminfo is used, a
+choice is controlled by a CMake build option.  If terminfo is used, a
 library is required to access the database (on some systems this library is
 ncurses, but JOE does not use curses to control the terminal- it has its own
 code for this).</p>
