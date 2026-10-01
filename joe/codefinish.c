@@ -90,8 +90,9 @@ static const char *keyword(const char *s, const char *end, const char *word)
  *     ".so", which is not an identifier, so it is skipped as Python would.
  *   - a directory whose name is a valid identifier: a package, or a
  *     namespace package if it has no __init__.py.
- * Names starting with "_" (private modules, __init__, __pycache__, and
- * built-ins like _io) are left out of the completions.
+ * __init__ and __pycache__ are never offered.  Other names starting with
+ * "_" (private modules, and built-ins like _io) are left out unless the
+ * name being typed starts with "_" too: then only those names are offered.
  * Modules compiled into the interpreter, such as sys, have no file; their
  * names come from sys.builtin_module_names.  Zip files on sys.path are not
  * searched, since that would mean reading them.
@@ -180,11 +181,15 @@ static ptrdiff_t module_name(const char *dir, const char *name)
 		if (len > slen && slen > best && !zcmp(name + len - slen, python.suffixes[x]))
 			best = slen;
 	}
-	if (best)
+	if (best) {
+		/* A package's __init__ is importable but never worth offering */
+		if (len - best == 8 && !strncmp(name, "__init__", 8))
+			return 0;
 		return is_identifier(name, len - best) ? len - best : 0;
+	}
 
 	/* A package directory */
-	if (!is_identifier(name, len))
+	if (!is_identifier(name, len) || !zcmp(name, "__pycache__"))
 		return 0;
 	path = vsncpy(NULL, 0, sz(dir));
 	path = vsadd(path, '/');
@@ -192,6 +197,17 @@ static ptrdiff_t module_name(const char *dir, const char *name)
 	is_dir = !stat(path, &st) && S_ISDIR(st.st_mode);
 	vsrm(path);
 	return is_dir ? len : 0;
+}
+
+/* Should name be offered when leaf has been typed?  It must start with
+ * leaf, and private names (starting with "_") are only offered when leaf
+ * starts with "_" as well.
+ */
+static int wanted(const char *name, const char *leaf, ptrdiff_t leaf_len)
+{
+	if (name[0] == '_' && !(leaf_len && leaf[0] == '_'))
+		return 0;
+	return !strncmp(name, leaf, (size_t)leaf_len);
 }
 
 /* Add the importable names in directory dir that start with leaf to
@@ -207,10 +223,8 @@ static char **python_list(char **options, const char *dir, const char *leaf, ptr
 		return options;
 	while ((de = readdir(d)) != NULL) {
 		ptrdiff_t len;
-		/* Skip hidden entries and private names ("_" also covers __init__
-		 * and __pycache__) */
-		if (de->d_name[0] == '.' || de->d_name[0] == '_' ||
-		    strncmp(de->d_name, leaf, (size_t)leaf_len))
+		/* Skip hidden entries and, unless asked for, private names */
+		if (de->d_name[0] == '.' || !wanted(de->d_name, leaf, leaf_len))
 			continue;
 		len = module_name(dir, de->d_name);
 		if (len)
@@ -261,8 +275,7 @@ static char **python_modules(char **options, const char *filename,
 	/* Modules built into the interpreter are top-level only */
 	if (!pkg_len && python.builtins)
 		for (x = 0; python.builtins[x]; ++x)
-			if (python.builtins[x][0] != '_' &&
-			    !strncmp(python.builtins[x], leaf, (size_t)leaf_len))
+			if (wanted(python.builtins[x], leaf, leaf_len))
 				options = vaadd(options, vsncpy(NULL, 0, sv(python.builtins[x])));
 
 	vsrm(script_dir);
