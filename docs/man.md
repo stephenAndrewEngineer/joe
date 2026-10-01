@@ -3543,9 +3543,11 @@ Complete word in text window
 
 * codefinish<br>
 Code completion (Shift-Tab).  Passes the whole buffer, its file name and
-the cursor position to codeFinish() in joe/codefinish.c and inserts the
-text it returns at the cursor (currently an example that always inserts
-"I am completing code")
+the cursor position to codeFinish() in joe/codefinish.c.  A single
+completion is inserted right away; several are offered in a menu like
+the one for Esc Tab.  Current rules: in a .py file a line starting with
+"#!/" completes to "#!/usr/bin/env python3", and after "import" or
+"from" the module name completes to numpy, matplotlib, os or sys
 <br>
 
 * insc<br>
