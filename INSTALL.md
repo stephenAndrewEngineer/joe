@@ -31,6 +31,30 @@ new features will not work):
 	rm ~/.jstarrc
 	rm ~/.jpicorc
 
+## Building with CMake
+
+JOE can also be built out of tree with CMake (3.13 or newer):
+
+	cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/usr
+
+		- configuration files in /etc/joe
+		- syntax files in /usr/share/joe
+
+	cmake --build build
+
+	sudo cmake --install build
+
+Options (pass with -D<option>=<value>):
+
+	JOE_CURSES=OFF		don't search the curses libraries for terminfo
+	JOE_TERMCAP=OFF		don't search the termcap library for terminfo
+	JOE_UNICODE_VERSION	Unicode table to build (default 9.0.0)
+	JOE_BUILD_UTILS=ON	also build the helper programs in joe/util
+
+The CMake build generates autoconf.h in the build directory, so the source
+tree must not contain one from an in-tree ./configure ("make distclean"
+removes it).
+
 ## Mercurial
 
 ### Developer checkout
