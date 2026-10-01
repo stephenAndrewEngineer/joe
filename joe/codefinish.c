@@ -88,9 +88,10 @@ static const char *keyword(const char *s, const char *end, const char *word)
  *     identifier.  An extension built for another Python version, like
  *     foo.cpython-39-x86_64-linux-gnu.so, leaves "foo.cpython-39-..." before
  *     ".so", which is not an identifier, so it is skipped as Python would.
- *     A package's own __init__ module is not offered.
  *   - a directory whose name is a valid identifier: a package, or a
- *     namespace package if it has no __init__.py (__pycache__ is skipped).
+ *     namespace package if it has no __init__.py.
+ * Names starting with "_" (private modules, __init__, __pycache__, and
+ * built-ins like _io) are left out of the completions.
  * Modules compiled into the interpreter, such as sys, have no file; their
  * names come from sys.builtin_module_names.  Zip files on sys.path are not
  * searched, since that would mean reading them.
@@ -179,15 +180,11 @@ static ptrdiff_t module_name(const char *dir, const char *name)
 		if (len > slen && slen > best && !zcmp(name + len - slen, python.suffixes[x]))
 			best = slen;
 	}
-	if (best) {
-		/* A package's __init__ is importable but never worth offering */
-		if (len - best == 8 && !strncmp(name, "__init__", 8))
-			return 0;
+	if (best)
 		return is_identifier(name, len - best) ? len - best : 0;
-	}
 
 	/* A package directory */
-	if (!is_identifier(name, len) || !zcmp(name, "__pycache__"))
+	if (!is_identifier(name, len))
 		return 0;
 	path = vsncpy(NULL, 0, sz(dir));
 	path = vsadd(path, '/');
@@ -210,7 +207,10 @@ static char **python_list(char **options, const char *dir, const char *leaf, ptr
 		return options;
 	while ((de = readdir(d)) != NULL) {
 		ptrdiff_t len;
-		if (de->d_name[0] == '.' || strncmp(de->d_name, leaf, (size_t)leaf_len))
+		/* Skip hidden entries and private names ("_" also covers __init__
+		 * and __pycache__) */
+		if (de->d_name[0] == '.' || de->d_name[0] == '_' ||
+		    strncmp(de->d_name, leaf, (size_t)leaf_len))
 			continue;
 		len = module_name(dir, de->d_name);
 		if (len)
@@ -261,7 +261,8 @@ static char **python_modules(char **options, const char *filename,
 	/* Modules built into the interpreter are top-level only */
 	if (!pkg_len && python.builtins)
 		for (x = 0; python.builtins[x]; ++x)
-			if (!strncmp(python.builtins[x], leaf, (size_t)leaf_len))
+			if (python.builtins[x][0] != '_' &&
+			    !strncmp(python.builtins[x], leaf, (size_t)leaf_len))
 				options = vaadd(options, vsncpy(NULL, 0, sv(python.builtins[x])));
 
 	vsrm(script_dir);
