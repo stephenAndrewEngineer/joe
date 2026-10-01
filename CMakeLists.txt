@@ -38,6 +38,7 @@ endif()
 option(JOE_CURSES "Search the curses libraries for terminfo support" ON)
 option(JOE_TERMCAP "Search the termcap library for terminfo support" ON)
 option(JOE_BUILD_UTILS "Build the helper programs in joe/util" OFF)
+option(JOE_MATH_FUNCS "Math functions (sin, sqrt, ^, regression, ...) in the calculator; links libm" OFF)
 set(JOE_UNICODE_VERSION "9.0.0" CACHE STRING "Unicode version of the joe/unicat-<version>.c table to build")
 
 set(JOE_UNICAT "${PROJECT_SOURCE_DIR}/joe/unicat-${JOE_UNICODE_VERSION}.c")
@@ -93,11 +94,17 @@ joe_search_libs(tgetflag TERMINFO ${JOE_TERM_LIBS})
 
 joe_search_libs(snprintf HAVE_SNPRINTF snprintf db)
 
-foreach(func sin cos tan exp sqrt cbrt log log10 asin acos atan sinh cosh tanh
-             asinh acosh atanh floor ceil fabs erf erfc j0 j1 y0 y1 hypot)
-	string(TOUPPER "${func}" ufunc)
-	joe_search_libs(${func} HAVE_${ufunc} m)
-endforeach()
+# The calculator (umath.c) only uses libm when JOE_MATH_FUNCS is on
+if(JOE_MATH_FUNCS)
+	foreach(func sin cos tan exp sqrt cbrt log log10 asin acos atan sinh cosh tanh
+	             asinh acosh atanh floor ceil fabs erf erfc j0 j1 y0 y1 hypot pow)
+		string(TOUPPER "${func}" ufunc)
+		joe_search_libs(${func} HAVE_${ufunc} m)
+	endforeach()
+	if(NOT HAVE_POW OR NOT HAVE_SQRT OR NOT HAVE_LOG OR NOT HAVE_EXP)
+		message(FATAL_ERROR "JOE_MATH_FUNCS needs pow, sqrt, log and exp")
+	endif()
+endif()
 
 #### Header files ####
 

@@ -1257,6 +1257,7 @@ int blksum(BW *bw, double *sum, double *sumsq)
 		return -1;
 }
 
+#ifdef JOE_MATH_FUNCS
 int blklr(BW *bw, double *xsum, double *xsumsq, double *ysum, double *ysumsq, double *xy, int logx, int logy)
 {
 	char buf[80];
@@ -1335,6 +1336,7 @@ int blklr(BW *bw, double *xsum, double *xsumsq, double *ysum, double *ysumsq, do
 	} else
 		return -1;
 }
+#endif
 
 /* Get a (possibly square) block into a buffer
  * Block is converted to UTF-8

@@ -251,7 +251,12 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
 			if (cnt) {
+#ifdef JOE_MATH_FUNCS
 				x = sqrt((xsq - x*x/(double)cnt)/(double)cnt);
+#else
+				if (!merr)
+					merr = joe_gettext(_("Math functions are not enabled"));
+#endif
 			}
 		} else if (!zcmp(ident, "samp")) {
 			double xsq;
@@ -260,7 +265,12 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
 			if (cnt) {
+#ifdef JOE_MATH_FUNCS
 				x = sqrt((xsq - x*x/(double)cnt)/(double)(cnt - 1));
+#else
+				if (!merr)
+					merr = joe_gettext(_("Math functions are not enabled"));
+#endif
 			}
 		} else if (!zcmp(ident, "eval")) {
 			const char *save = ptr;
@@ -333,12 +343,24 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 		goto loop;
 	} else if (*ptr == '*' && ptr[1] == '*' && 8 > prec) {
 		ptr+=2;
+#ifdef JOE_MATH_FUNCS
 		x = pow(x, expr(8, en, &dumb, secure));
+#else
+		expr(8, en, &dumb, secure);
+		if (!merr)
+			merr = joe_gettext(_("Math functions are not enabled"));
+#endif
 		v = 0;
 		goto loop;
 	} else if (*ptr == '^' && 8 > prec) {
 		++ptr;
+#ifdef JOE_MATH_FUNCS
 		x = pow(x, expr(8, en, &dumb, secure));
+#else
+		expr(8, en, &dumb, secure);
+		if (!merr)
+			merr = joe_gettext(_("Math functions are not enabled"));
+#endif
 		v = 0;
 		goto loop;
 	} else if (*ptr == '*' && 7 > prec) {
@@ -469,6 +491,8 @@ static double eval(const char *s, int secure)
 }
 
 /* These don't all exist on some systems... */
+
+#ifdef JOE_MATH_FUNCS
 
 #ifdef HAVE_SIN
 static double m_sin(double n) { return sin(n); }
@@ -622,15 +646,15 @@ static double m_ceil(double n) { return ceil(n); }
 #endif
 #endif
 
-#ifdef HAVE_FABS
-static double m_fabs(double n) { return fabs(n); }
-#else
-#ifdef fabs
+#endif /* JOE_MATH_FUNCS */
+
+#if defined(JOE_MATH_FUNCS) && (defined(HAVE_FABS) || defined(fabs))
 static double m_fabs(double n) { return fabs(n); }
 #else
 static double m_fabs(double n) { return (n < 0.0) ? -n : n; }
 #endif
-#endif
+
+#ifdef JOE_MATH_FUNCS
 
 #ifdef HAVE_ERF
 static double m_erf(double n) { return erf(n); }
@@ -688,9 +712,11 @@ static double m_hypot(double n, double m) { return hypot(n, m); }
 #endif
 #endif
 
+#endif /* JOE_MATH_FUNCS */
 
 static double m_int(double n) { return (int)(n); }
 
+#ifdef JOE_MATH_FUNCS
 static double m_lr(double n)
 {
 	struct var *v;
@@ -994,12 +1020,14 @@ static double m_rLR(double n)
 
 	return exp((log(n) - A) / BB);
 }
+#endif /* JOE_MATH_FUNCS */
 
 static void setup_vars(BW *tbw)
 {
 	struct var *v;
 	int c = brch(tbw->cursor);
 	if (!vars) {
+#ifdef JOE_MATH_FUNCS
 #ifdef HAVE_SIN
 		v = get("sin"); v->func = m_sin;
 #else
@@ -1077,12 +1105,14 @@ static void setup_vars(BW *tbw)
 		v = get("atan"); v->func = m_atan;
 #endif
 #endif
+#endif /* JOE_MATH_FUNCS */
 #ifdef M_PI
 		v = get("pi"); v->val = M_PI; v->set = 1;
 #endif
 #ifdef M_E
 		v = get("e"); v->val = M_E; v->set = 1;
 #endif
+#ifdef JOE_MATH_FUNCS
 #ifdef HAVE_SINH
 		v = get("sinh"); v->func = m_sinh;
 #else
@@ -1139,13 +1169,9 @@ static void setup_vars(BW *tbw)
 		v = get("ceil"); v->func = m_ceil;
 #endif
 #endif
-#ifdef HAVE_FABS
+#endif /* JOE_MATH_FUNCS */
 		v = get("abs"); v->func = m_fabs;
-#else
-#ifdef fabs
-		v = get("abs"); v->func = m_fabs;
-#endif
-#endif
+#ifdef JOE_MATH_FUNCS
 #ifdef HAVE_ERF
 		v = get("erf"); v->func = m_erf;
 #else
@@ -1188,7 +1214,9 @@ static void setup_vars(BW *tbw)
 		v = get("y1"); v->func = m_y1;
 #endif
 #endif
+#endif /* JOE_MATH_FUNCS */
 		v = get("int"); v->func = m_int;
+#ifdef JOE_MATH_FUNCS
 		v = get("lr"); v->func = m_lr;
 		v = get("rlr"); v->func = m_rlr;
 		v = get("Lr"); v->func = m_Lr;
@@ -1197,6 +1225,7 @@ static void setup_vars(BW *tbw)
 		v = get("rlR"); v->func = m_rlR;
 		v = get("LR"); v->func = m_LR;
 		v = get("rLR"); v->func = m_rLR;
+#endif
 	}
 
 	v = get("top");

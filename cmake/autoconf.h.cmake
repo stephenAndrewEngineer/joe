@@ -122,7 +122,8 @@
 #cmakedefine SETPGRP_VOID 1
 #cmakedefine NEED_TO_REINSTALL_SIGNAL 1
 
-/* Math functions */
+/* Math functions in the calculator (cmake -DJOE_MATH_FUNCS=ON) */
+#cmakedefine JOE_MATH_FUNCS 1
 #cmakedefine HAVE_SIN 1
 #cmakedefine HAVE_COS 1
 #cmakedefine HAVE_TAN 1

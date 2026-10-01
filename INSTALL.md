@@ -133,6 +133,8 @@ properly with JOE.
 	JOE_TERMCAP=OFF		don't search the termcap library for terminfo
 	JOE_UNICODE_VERSION	Unicode table to build (default 9.0.0)
 	JOE_BUILD_UTILS=ON	also build the helper programs in joe/util
+	JOE_MATH_FUNCS=ON	enable the calculator's math functions (sin, sqrt,
+			^, regression, ...); this links libm
 
   The standard CMake variables also apply, for example CMAKE_BUILD_TYPE
   (default RelWithDebInfo), CMAKE_C_COMPILER and CMAKE_INSTALL_SYSCONFDIR.
