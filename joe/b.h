@@ -276,6 +276,12 @@ P *binss(P *p, const char *s);
  */
 B *bload(const char *s);
 B *bread(int fi, off_t max);
+
+/* popen()/pclose() that restore default signal handling in the child.
+ * The command runs under /bin/sh; write_mode selects the child's stdin
+ * (1) or stdout (0) as the pipe. */
+FILE *joe_popen(const char *s, int write_mode);
+void joe_pclose(FILE *f);
 B *borphan(void);
 
 /* Save 'size' bytes beginning at 'p' into file with name in 's' */

@@ -3547,7 +3547,10 @@ the cursor position to codeFinish() in joe/codefinish.c.  A single
 completion is inserted right away; several are offered in a menu like
 the one for Esc Tab.  Current rules: in a .py file a line starting with
 "#!/" completes to "#!/usr/bin/env python3", and after "import" or
-"from" the module name completes to numpy, matplotlib, os or sys
+"from" the (dotted) module name completes to the modules Python can
+import: those in the file's own directory, in $PYTHONPATH and in the
+rest of python3's sys.path, plus the interpreter's built-in modules.
+Only directory listings are read, never the files themselves
 <br>
 
 * insc<br>
