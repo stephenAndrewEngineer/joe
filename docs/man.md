@@ -3541,6 +3541,11 @@ Type next key
 Complete word in text window
 <br>
 
+* codefinish<br>
+Code completion (Shift-Tab).  Passes the whole buffer and its file name
+to codeFinish() in joe/codefinish.c, which does nothing yet
+<br>
+
 * insc<br>
 Insert a space 
 <br>

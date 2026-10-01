@@ -729,6 +729,8 @@ extmouse	^[ [ <		Introduces an extended xterm mouse event
 :main			Text editing window
 :inherit windows
 
+codefinish	^[ [ Z		Code completion (Shift-Tab)
+
  Ispell
 :def ispellfile filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp;/bin/rm ispell.tmp",rtn,retype
 :def ispellword psh,nextword,markk,prevword,markb,filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;tr -d <ispell.tmp '\\012';/bin/rm ispell.tmp",rtn,retype,nextword

@@ -941,6 +941,7 @@ execmd		^[ ^X
 jump		^[ SP
 finish		^[ ^I		Complete word in document
 finish		^[ ^M		Complete word: used to be math
+codefinish	^[ [ Z		Code completion (Shift-Tab)
 isrch		^[ s		Инкрементальный поиск вперед
 isrch		^[ S		
 isrch		^[ ^S		

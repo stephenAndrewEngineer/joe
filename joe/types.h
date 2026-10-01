@@ -333,6 +333,7 @@ struct highlight_state {
 #include "umath.h"
 #include "undo.h"
 #include "usearch.h"
+#include "codefinish.h"
 #include "ushell.h"
 #include "utag.h"
 #include "utf8.h"

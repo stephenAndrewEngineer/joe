@@ -739,6 +739,8 @@ extmouse	^[ [ <		Introduces an extended xterm mouse event
 :main			Text editing window
 :inherit windows
 
+codefinish	^[ [ Z		Code completion (Shift-Tab)
+
  Spell-check macros
 
  Ispell

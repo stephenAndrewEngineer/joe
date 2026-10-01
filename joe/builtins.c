@@ -421,6 +421,7 @@ const char *builtins[]=
 		"execmd		^[ ^X		Prompt for command to execute\n"
 		"finish		^[ ^I		Complete word in document\n"
 		"finish		^[ ^M		Complete word: used to be math\n"
+		"codefinish	^[ [ Z		Code completion (Shift-Tab)\n"
 		"mwind!,mfit,jump,bol		^[ SP\n"
 		"isrch		^[ s		Forward incremental search\n"
 		"isrch		^[ S		Forward incremental search\n"

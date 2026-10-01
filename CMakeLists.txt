@@ -333,7 +333,7 @@ add_executable(joe
 	joe/ufile.c joe/uformat.c joe/uisrch.c joe/umath.c joe/undo.c
 	joe/usearch.c joe/ushell.c joe/utag.c joe/va.c joe/vfile.c joe/vs.c
 	joe/w.c joe/utils.c joe/syntax.c joe/utf8.c joe/selinux.c
-	joe/charmap.c joe/mouse.c joe/lattr.c joe/gettext.c joe/builtin.c
+	joe/charmap.c joe/codefinish.c joe/mouse.c joe/lattr.c joe/gettext.c joe/builtin.c
 	joe/builtins.c joe/vt.c joe/mmenu.c joe/state.c joe/options.c
 	joe/unicode.c joe/cclass.c joe/frag.c joe/colors.c
 	"${JOE_UNICAT}")

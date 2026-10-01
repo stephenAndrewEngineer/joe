@@ -93,6 +93,7 @@ CMD cmds[] = {
 	{"ffirst", TYPETW + TYPEPW, pffirst, NULL, 0, NULL},
 	{"filt", TYPETW + TYPEPW + EMOD + EBLOCK, ufilt, NULL, 0, NULL},
 	{"finish", TYPETW + TYPEPW + EMOD, ufinish, NULL, 1, NULL},
+	{"codefinish", TYPETW + EMOD, ucodefinish, NULL, 0, NULL},
 	{"fnext", TYPETW + TYPEPW, pfnext, NULL, 1, NULL},
 	{"format", TYPETW + TYPEPW + EFIXXCOL + EMOD, uformat, NULL, 1, NULL},
 	{"fmtblk", TYPETW + EMOD + EFIXXCOL + EBLOCK, ufmtblk, NULL, 1, NULL},

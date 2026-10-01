@@ -723,6 +723,8 @@ extmouse	^[ [ <		Introduces an extended xterm mouse event
 :main			Text editing window
 :inherit windows
 
+codefinish	^[ [ Z		Code completion (Shift-Tab)
+
   ESC-x compile
 
 :def compile mwind!,mfit!,querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
