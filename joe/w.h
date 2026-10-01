@@ -107,11 +107,6 @@ struct base {
  */
 ptrdiff_t getgrouph(W *w);
 
-/* W *findtopw(W *);
- * Find first (top-most) window of a family
- */
-W *findtopw(W *w);
-
 /* W *findbotw(W *);
  * Find last (bottom-most) window a family
  */
@@ -193,32 +188,8 @@ int wabort(W *w);
  */
 int wnext(Screen *t);
 
-/* int wprev(Screen *);
- *
- * Switch to previous window
- */
-int wprev(Screen *t);
-
-/* int wgrow(W *);
- *
- * increase size of window.  Return 0 for success, -1 for fail.
- */
-int wgrow(W *w);
-
-/* int wshrink(W *);
- *
- * Decrease size of window.  Returns 0 for success, -1 for fail.
- */
-int wshrink(W *w);
-
 int wgrowup(W *w);
 int wgrowdown(W *w);
-
-/* void wshowone(W *);
- *
- * Show only one window on the screen
- */
-void wshowone(W *w);
 
 /* void wshowall(Screen *);
  *

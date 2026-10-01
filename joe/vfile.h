@@ -114,14 +114,10 @@ void vlimit();
  * Write all changed pages to the disk
  */
 
-void vflsh(void);
-
 /* void vflshf(VFILE *vfile);
  *
  * Write changed pages for a specific file to the disk
  */
-
-void vflshf(VFILE *vfile);
 
 /* char *vlock(VFILE *vfile,off_t addr);
  *

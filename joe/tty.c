@@ -39,6 +39,23 @@
 #endif
 #endif
 
+/* Moved here from the headers: used only in this file */
+
+#define TIMES 3
+
+#define DIVIDEND 10000000
+
+/* void sigjoe(void);  Set the signal handling for joe.  I.E., ignore all
+ * signals the user can generate from the keyboard (SIGINT, SIGPIPE)
+ * and trap the software terminate and hangup signals (SIGTERM, SIGHUP) so
+ * that 'ttsig' gets called.
+ */
+static void sigjoe(void);
+
+static void tickoff(void);
+
+static void tickon(void);
+
 int idleout = 1;
 
 #ifdef __amigaos
@@ -145,7 +162,7 @@ ptrdiff_t obufsiz;
 /* The baud rate */
 
 long tty_baud;			/* Bits per second */
-long upc;			/* Microseconds per character */
+static long upc;			/* Microseconds per character */
 
 /* TTY Speed code to baud-rate conversion table (this is dumb- is it really
  * too much to ask for them to just use an integer for the baud-rate?)
@@ -216,7 +233,7 @@ struct packet {
 MPX asyncs[NPROC];
 
 /* Set signals for JOE */
-void sigjoe(void)
+static void sigjoe(void)
 {
 	if (ttysig)
 		return;
@@ -275,7 +292,7 @@ static RETSIGTYPE dotick(int unused)
 	ticked = 1;
 }
 
-void tickoff(void)
+static void tickoff(void)
 {
 #ifdef HAVE_SETITIMER
 	struct itimerval val;
@@ -289,7 +306,7 @@ void tickoff(void)
 #endif
 }
 
-void tickon(void)
+static void tickon(void)
 {
 #ifdef HAVE_SETITIMER
 	struct itimerval val;

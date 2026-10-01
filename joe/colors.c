@@ -12,9 +12,21 @@
 #define COLORDEF_VISITED	1
 #define COLORDEF_VISITING	2
 
+/* Moved here from the headers: used only in this file */
+
+#define COLORSPEC_TYPE_ATTR	1
+
+#define COLORSPEC_TYPE_GUI	2
+
+#define COLORSET_GUI		0x1000000
+
+static char **get_colors(void);
+
+static int parse_color_spec(const char **, struct color_spec *);
+
 /* Current scheme globals */
 const char *scheme_name = NULL;
-struct color_scheme *curscheme = NULL;
+static struct color_scheme *curscheme = NULL;
 struct color_set *curschemeset = NULL;
 
 /* Cursor color (not used yet) */
@@ -123,7 +135,7 @@ static int parse_scoped_ident(const char **p, char *dest, ptrdiff_t sz)
 }
 
 /* Parse the color part (spec) of a color def */
-int parse_color_spec(const char **p, struct color_spec *dest)
+static int parse_color_spec(const char **p, struct color_spec *dest)
 {
 	char buf[128];
 	int fg = 1, bg = 0;		/* Next expected */
@@ -709,7 +721,7 @@ static int findpal(int *palette, int startidx, int endidx, int color)
 }
 
 /* Create a list of all available schemes */
-char **get_colors(void)
+static char **get_colors(void)
 {
 	return find_configs(NULL, "jcf", "colors", "colors");
 }

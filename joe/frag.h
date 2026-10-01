@@ -36,13 +36,8 @@ void align_frag(Frag *f, ptrdiff_t n);
  */
  
 
-ptrdiff_t emitb_noalign(Frag *f, char c);
-ptrdiff_t emitb(Frag *f, char c);
-ptrdiff_t emith(Frag *f, short n);
 ptrdiff_t emiti(Frag *f, int n);
-ptrdiff_t emitd(Frag *f, double d);
 ptrdiff_t emitp(Frag *f, void *p);
-ptrdiff_t emits(Frag *f, unsigned char *s, int len);
 
 ptrdiff_t emit_branch(Frag *f, ptrdiff_t target);
 void fixup_branch(Frag *f, ptrdiff_t pos);
@@ -51,14 +46,10 @@ void frag_link(Frag *f, ptrdiff_t chain);
 /* Access data in a fragment */
 
 #define fragc(f, ofst) (*((f)->start + (ofst)))
-#define fragh(f, ofst) (*(short *)((f)->start + (ofst)))
-#define fragi(f, ofst) (*(int *)((f)->start + (ofst)))
 #define fragd(f, ofst) (*(double *)((f)->start + (ofst)))
-#define fragp(f, ofst) (*(void **)((f)->start + (ofst)))
 
 /* Fetch an datum from a fragment and advance the "PC" */
 
 int fetchi(Frag *f, ptrdiff_t *pc);
-short fetchh(Frag *f, ptrdiff_t *pc);
 void *fetchp(Frag *f, ptrdiff_t *pc);
 void fin_code(Frag *f);

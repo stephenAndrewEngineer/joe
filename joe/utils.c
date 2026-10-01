@@ -12,25 +12,58 @@
 #include <sys/ioctl.h>
 #endif
 
+/* Moved here from the headers: used only in this file */
+
+#define zcat(a, b) strcat((a), (b))
+
+static ptrdiff_t Zlen(const int *s);
+
+static int *Zlcpy(int *a, ptrdiff_t siz, const int *b);
+
+/*
+ * Functions which return minimum/maximum of two numbers  
+ */
+static unsigned int uns_min(unsigned int a, unsigned int b);
+
+static signed int int_min(signed int a, int signed b);
+
+static signed long long_max(signed long a, signed long b);
+
+static signed long long_min(signed long a, signed long b);
+
+static ptrdiff_t diff_max(ptrdiff_t a, ptrdiff_t b);
+
+static off_t zhtoo(const char *s);
+
+static long ztol(const char *s);
+
+static long zhtol(const char *s);
+
+static ptrdiff_t ztodiff(const char *s);
+
+static ptrdiff_t zhtodiff(const char *s);
+
+static int parse_range(const char **p,int *first,int *second);
+
 /*
  * return minimum/maximum of two numbers
  */
-unsigned int uns_min(unsigned int a, unsigned int b)
+static unsigned int uns_min(unsigned int a, unsigned int b)
 {
 	return a < b ? a : b;
 }
 
-signed int int_min(signed int a, signed int b)
+static signed int int_min(signed int a, signed int b)
 {
 	return a < b ? a : b;
 }
 
-signed long int long_max(signed long int a, signed long int b)
+static signed long int long_max(signed long int a, signed long int b)
 {
 	return a > b ? a : b;
 }
 
-signed long int long_min(signed long int a, signed long int b)
+static signed long int long_min(signed long int a, signed long int b)
 {
 	return a < b ? a : b;
 }
@@ -45,7 +78,7 @@ off_t off_min(off_t a, off_t b)
 	return a < b ? a : b;
 }
 
-ptrdiff_t diff_max(ptrdiff_t a, ptrdiff_t b)
+static ptrdiff_t diff_max(ptrdiff_t a, ptrdiff_t b)
 {
 	return a > b ? a : b;
 }
@@ -368,7 +401,7 @@ char *zlcat(char *a, ptrdiff_t siz, const char *b)
 
 /* Convert ASCII number to off_t */
 
-off_t zhtoo(const char *s)
+static off_t zhtoo(const char *s)
 {
 	off_t val = 0;
 	int flg = 0;
@@ -435,7 +468,7 @@ off_t ztoo(const char *s)
 		return val;
 }
 
-long ztol(const char *s)
+static long ztol(const char *s)
 {
 	off_t val = ztoo(s);
 	return (long)val;
@@ -447,13 +480,13 @@ int ztoi(const char *s)
 	return (int)val;
 }
 
-ptrdiff_t ztodiff(const char *s)
+static ptrdiff_t ztodiff(const char *s)
 {
 	off_t val = ztoo(s);
 	return (ptrdiff_t)val;
 }
 
-long zhtol(const char *s)
+static long zhtol(const char *s)
 {
 	off_t val = zhtoo(s);
 	return (long)val;
@@ -465,7 +498,7 @@ int zhtoi(const char *s)
 	return (int)val;
 }
 
-ptrdiff_t zhtodiff(const char *s)
+static ptrdiff_t zhtodiff(const char *s)
 {
 	off_t val = zhtoo(s);
 	return (ptrdiff_t)val;
@@ -489,7 +522,7 @@ int Zcmp(const int *a, const int *b)
 
 /* Copy b into buffer a of length len.  A will always end up NUL terminated. */
 
-int *Zlcpy(int *a, ptrdiff_t len, const int *b)
+static int *Zlcpy(int *a, ptrdiff_t len, const int *b)
 {
 	int *org = a;
 	if (!len) {
@@ -550,7 +583,7 @@ char *Ztoutf8(char *a, ptrdiff_t len, const int *b)
 
 /* Length of an int string */
 
-ptrdiff_t Zlen(const int *s)
+static ptrdiff_t Zlen(const int *s)
 {
 	ptrdiff_t len = 0; 
 	for (;;) {
@@ -910,7 +943,7 @@ void emit_string(FILE *f,const char *s,ptrdiff_t len)
 
 /* Parse a character range: a-z */
 
-int parse_range(const char * *pp, int *first, int *second)
+static int parse_range(const char * *pp, int *first, int *second)
 {
 	const char *p= *pp;
 	int a, b;

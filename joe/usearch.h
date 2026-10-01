@@ -78,5 +78,3 @@ extern char srchstr[];
 extern char replstr[];
 extern SRCH *globalsrch;
 
-extern const char *rest_key;
-extern const char *backup_key;

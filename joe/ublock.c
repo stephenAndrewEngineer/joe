@@ -11,6 +11,18 @@
 #include <sys/wait.h>
 #endif
 
+/* Moved here from the headers: used only in this file */
+
+static void pinsrect(P *cur, B *tmp, off_t width, int usetabs);
+
+static int ptabrect(P *org, off_t height, off_t right);
+
+static void pclrrect(P *org, off_t height, off_t right, int usetabs);
+
+static void pdelrect(P *org, off_t height, off_t right);
+
+static void setindent(BW *bw);
+
 int nowmarking;
 
 /* Global options */
@@ -129,7 +141,7 @@ B *pextrect(P *org, off_t height, off_t right)
  * Delete a rectangle.
  */
 
-void pdelrect(P *org, off_t height, off_t right)
+static void pdelrect(P *org, off_t height, off_t right)
 {
 	P *p = pdup(org, "pdelrect");
 	P *q = pdup(p, "pdelrect");
@@ -149,7 +161,7 @@ void pdelrect(P *org, off_t height, off_t right)
  * Blank-out a rectangle.
  */
 
-void pclrrect(P *org, off_t height, off_t right, int usetabs)
+static void pclrrect(P *org, off_t height, off_t right, int usetabs)
 {
 	P *p = pdup(org, "pclrrect");
 	P *q = pdup(p, "pclrrect");
@@ -173,7 +185,7 @@ void pclrrect(P *org, off_t height, off_t right, int usetabs)
  * Check if there are any TABs in a rectangle
  */
 
-int ptabrect(P *org, off_t height, off_t right)
+static int ptabrect(P *org, off_t height, off_t right)
 {
 	P *p = pdup(org, "ptabrect");
 
@@ -197,7 +209,7 @@ int ptabrect(P *org, off_t height, off_t right)
 
 /* Insert rectangle */
 
-void pinsrect(P *cur, B *tmp, off_t width, int usetabs)
+static void pinsrect(P *cur, B *tmp, off_t width, int usetabs)
 {
 	P *p = pdup(cur, "pinsrect");	/* We insert at & move this pointer */
 	P *q = pdup(tmp->bof, "pinsrect");	/* These are for scanning through 'tmp' */
@@ -638,7 +650,7 @@ int ublkcpy(W *w, int k)
 
 /* Set highlighted block on a program block */
 
-void setindent(BW *bw)
+static void setindent(BW *bw)
 {
 	P *p, *q;
 	off_t indent;

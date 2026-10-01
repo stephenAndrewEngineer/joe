@@ -7,6 +7,10 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+static void bwfllwh(W *w);
+
 /* Attributes for line numbers, and current line */
 int bg_linum = 0;
 int bg_curlinum = 0;
@@ -63,7 +67,7 @@ int opt_right = 8;
 
 /* For hex */
 
-void bwfllwh(W *thew)
+static void bwfllwh(W *thew)
 {
 	BW *w = (BW *)thew->object;
 	/* Top must be a multiple of 16 bytes */

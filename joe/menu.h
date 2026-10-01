@@ -52,7 +52,6 @@ int umbacks(W *w, int k);
 void ldmenu(MENU *m, char **s, ptrdiff_t cursor);
 
 char *mcomplete(MENU *m);
-char *find_longest(char **lst);
 
 void menujump(MENU *m, ptrdiff_t x, ptrdiff_t y);
 

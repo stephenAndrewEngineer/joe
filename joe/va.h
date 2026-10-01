@@ -12,14 +12,8 @@
 
 typedef char *aELEMENT;
 
-/* aELEMENT adup(); */
-#define adup(s) vsdup(s)
 /* aELEMENT adel(); */
 #define adel(s) vsrm(s)
-/* int acmp(); */
-#define acmp(a,b) vscmp((a),(b))
-/* extern aELEMENT ablank; */
-#define ablank NULL
 /* extern aELEMENT aterm; */
 #define aterm NULL
 
@@ -42,16 +36,6 @@ void varm(aELEMENT *vary);
 /* Space management */
 /********************/
 
-/* int aSIZ(aELEMENT *vary);
- * int aSiz(aELEMENT *vary);
- * Access size part of array.  This int indicates the number of elements which
- * can fit in the array before realloc needs to be called.  It does not include
- * the extra space needed for the terminator and the header.
- *
- * aSIZ returns 0 if you pass it 0.  aSiz does not do this checking,
- * but can be used as an lvalue.
- */
-#define aSIZ(a) ((a) ? *((ptrdiff_t *)(a) - 2) : 0)
 #define aSiz(a) (*((ptrdiff_t *)(a) - 2))
 
 /* int aLEN(aELEMENT *vary);
@@ -83,15 +67,6 @@ ptrdiff_t alen(aELEMENT *ary);
  */
 aELEMENT *vaensure(aELEMENT *vary, ptrdiff_t len);
 
-/* aELEMENT *vazap(aELEMENT *vary, int pos, int n);
- * Destroy n elements from an array beginning at pos.  Is ok if pos/n go
- * past end of array.  This does not change the aLEN() value of the array.
- * This does nothing and returns 0 if 'vary' is 0.  Note that this
- * function does not actually write to the array.  This does not stop if
- * a aterm is encountered.
- */
-aELEMENT *vazap(aELEMENT *vary, ptrdiff_t pos, ptrdiff_t n);
-
 /* aELEMENT *vatrunc(aELEMENT *vary, int len);
  * Truncate array to indicated size.  This zaps or expands with blank elements
  * and sets the LEN() of the array.  A new array is created if 'vary' is 0.
@@ -102,16 +77,6 @@ aELEMENT *vatrunc(aELEMENT *vary, ptrdiff_t len);
 /* Function which write to an array */
 /************************************/
 
-/* aELEMENT *vafill(aELEMENT *vary, int pos, aELEMENT el, int len);
- * Set 'len' element of 'vary' beginning at 'pos' to duplications of 'el'.
- * Ok, if pos/len are past end of array.  If 'vary' is 0, a new array is
- * created.
- *
- * This does not zap previous values.  If you need that to happen, call
- * vazap first.  It does move the terminator around properly though.
- */
-aELEMENT *vafill(aELEMENT *vary, ptrdiff_t pos, aELEMENT el, ptrdiff_t len);
-
 #ifdef junk
 /* aELEMENT *vancpy(aELEMENT *vary, int pos, aELEMENT *array, int len);
  * Copy 'len' elements from 'array' onto 'vary' beginning at position 'pos'.
@@ -121,28 +86,6 @@ aELEMENT *vafill(aELEMENT *vary, ptrdiff_t pos, aELEMENT el, ptrdiff_t len);
  */
 aELEMENT *vancpy(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len);
 #endif
-
-/* aELEMENT *vandup(aELEMENT *vary, int pos, aELEMENT *array, int len);
- * Duplicate 'len' elements from 'array' onto 'vary' beginning at position
- * 'pos'.  'array' can be a char array since its length is passed separately.  A
- * new array is created if 'vary' is 0.
- */
-aELEMENT *vandup(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len);
-
-/* aELEMENT *vadup(aELEMENT *vary);
- * Duplicate array.  This is just a functionalized version of:
- *
- *   vandup(NULL,0,vary,aLEN(vary));
- *
- * but since you need to be able to refer to this particular function by
- * address often it's given here.
- *
- * (actually, there's bazillions of these simple combinations of the above
- * functions and the macros of the next section.  You'll probably want to make
- * functionalized instances of the ones you use most often - especially since
- * the macros aren't safe).
- */
-aELEMENT *vadup(aELEMENT *vary);
 
 /* aELEMENT *vaset(aELEMENT *vary, int pos, aELEMENT element);
  * Set an element in an array.  Any value of 'pos' is valid.  A new array
@@ -232,9 +175,6 @@ aELEMENT *vasort(aELEMENT *ary, ptrdiff_t len);
 
 /* Eliminate duplicates from a sorted array */
 void vauniq(aELEMENT *ary);
-
-/* Delete elements from an array */
-void vadel(aELEMENT *ary, ptrdiff_t ofset, ptrdiff_t len);
 
 /* aELEMENT *vawords(aELEMENT *a, char *s, int len, char *sep, int seplen);
  * Generate list of strings out of words in 's' separated with the characters

@@ -7,6 +7,12 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+static void vflsh(void);
+
+static void vflshf(VFILE *vfile);
+
 static VFILE vfiles = { {&vfiles, &vfiles} };	/* Known vfiles */
 static VPAGE *freepages = NULL;	/* Linked list of free pages */
 static VPAGE *htab[HTSIZE];	/* Hash table of page headers */
@@ -16,7 +22,7 @@ char *vbase;			/* Data first entry in vheader refers to */
 VPAGE **vheaders = NULL;	/* Array of header addresses */
 static ptrdiff_t vheadsz = 0;	/* No. entries allocated to vheaders */
 
-void vflsh(void)
+static void vflsh(void)
 {
 	VPAGE *vp;
 	VPAGE *vlowest;
@@ -61,7 +67,7 @@ void vflsh(void)
 	}
 }
 
-void vflshf(VFILE *vfile)
+static void vflshf(VFILE *vfile)
 {
 	VPAGE *vp;
 	VPAGE *vlowest;

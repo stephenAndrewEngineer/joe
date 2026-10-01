@@ -7,6 +7,12 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+static void scrup(BW *bw, ptrdiff_t n, int flg);
+
+static void scrdn(BW *bw, ptrdiff_t n, int flg);
+
 /***************/
 /* Global options */
 int pgamnt = -1;		/* No. of PgUp/PgDn lines to keep */
@@ -1205,7 +1211,7 @@ int ubos(W *w, int k)
  * If flg is clr: cursor stays fixed on the buffer line
  */
 
-void scrup(BW *bw, ptrdiff_t n, int flg)
+static void scrup(BW *bw, ptrdiff_t n, int flg)
 {
 	ptrdiff_t scrollamnt = 0;
 	ptrdiff_t cursoramnt = 0;
@@ -1267,7 +1273,7 @@ void scrup(BW *bw, ptrdiff_t n, int flg)
  * If flg is clr: cursor stays fixed on the buffer line
  */
 
-void scrdn(BW *bw, ptrdiff_t n, int flg)
+static void scrdn(BW *bw, ptrdiff_t n, int flg)
 {
 	ptrdiff_t scrollamnt = 0;
 	ptrdiff_t cursoramnt = 0;

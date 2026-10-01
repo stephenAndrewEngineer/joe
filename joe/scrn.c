@@ -7,6 +7,10 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+static int clrins(SCRN *t);
+
 int bg_text = 0; /* Background color for text */
 int skiptop = 0;
 int env_lines = 0;
@@ -492,7 +496,7 @@ static void setregn(SCRN *t, ptrdiff_t top, ptrdiff_t bot)
 
 /* Exit insert mode */
 
-int clrins(SCRN *t)
+static int clrins(SCRN *t)
 {
 	if (t->ins != 0) {
 		texec(t->cap, t->ei, 1, 0, 0, 0, 0);

@@ -7,6 +7,18 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+/* KMAP *mkkmap(void);
+ * Create an empty keymap
+ */
+static KMAP *mkkmap(void);
+
+/* void rmkmap(KMAP *kmap);
+ * Free a key map
+ */
+static void rmkmap(KMAP *kmap);
+
 struct context *contexts; /* Global list of KMAPs */
 char **keymap_list; /* KMAP names array for completion */
 
@@ -119,7 +131,7 @@ static int keyval(char *s)
 
 /* Create an empty keymap */
 
-KMAP *mkkmap(void)
+static KMAP *mkkmap(void)
 {
 	KMAP *kmap = (KMAP *) joe_calloc(SIZEOF(KMAP), 1);
 	kmap->what = 1;
@@ -129,7 +141,7 @@ KMAP *mkkmap(void)
 
 /* Eliminate a keymap */
 
-void rmkmap(KMAP *kmap)
+static void rmkmap(KMAP *kmap)
 {
 	struct interval_list *l, *n;
 	if (!kmap)

@@ -343,8 +343,6 @@ void nscroll(SCRN *t, int atr);
  */
 void magic(SCRN *t, ptrdiff_t y, int *cs, int *ca, int *s, int *a,ptrdiff_t placex);
 
-int clrins(SCRN *t);
-
 int meta_color(const char *s);
 
 /* Generate a field */

@@ -34,9 +34,25 @@
 
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+static struct lattr_db *mk_lattr_db(B *new_b, struct high_syntax *new_syn);
+
+static void rm_lattr_db(struct lattr_db *db);
+
+static void drop_lattr_db(B *b, struct lattr_db *db);
+
+#define lattr_size(db) ((db)->end - ((db)->ehole - (db)->hole))
+
+static void lattr_hole(struct lattr_db *db, ptrdiff_t pos);
+
+static void lattr_check(struct lattr_db *db, ptrdiff_t size);
+
+#define lattr_lvalue(db, line) ((line) >= (db)->hole ? (db)->buffer[(line) - (db)->hole + (db)->ehole] : (db)->buffer[line])
+
 /* Create a line attribute database */
 
-struct lattr_db *mk_lattr_db(B *new_b, struct high_syntax *new_syn)
+static struct lattr_db *mk_lattr_db(B *new_b, struct high_syntax *new_syn)
 {
 	struct lattr_db *db = (struct lattr_db *)joe_malloc(SIZEOF(struct lattr_db));
 	db->next = 0;
@@ -55,7 +71,7 @@ struct lattr_db *mk_lattr_db(B *new_b, struct high_syntax *new_syn)
 
 /* Delete a database */
 
-void rm_lattr_db(struct lattr_db *db)
+static void rm_lattr_db(struct lattr_db *db)
 {
 	free(db->buffer);
 	free(db);
@@ -90,7 +106,7 @@ void reset_all_lattr_db(struct lattr_db *db)
 
 /* Set gap position */
 
-void lattr_hole(struct lattr_db *db, ptrdiff_t pos)
+static void lattr_hole(struct lattr_db *db, ptrdiff_t pos)
 {
 	if (pos > db->hole)
 		mmove(db->buffer + db->hole, db->buffer + db->ehole, (pos - db->hole) * SIZEOF(HIGHLIGHT_STATE));
@@ -102,7 +118,7 @@ void lattr_hole(struct lattr_db *db, ptrdiff_t pos)
 
 /* Make sure there is enough space for an insert */
 
-void lattr_check(struct lattr_db *db, ptrdiff_t amnt)
+static void lattr_check(struct lattr_db *db, ptrdiff_t amnt)
 {
 	if (amnt > db->ehole - db->hole) {
 		/* Not enough space */
@@ -131,7 +147,7 @@ struct lattr_db *find_lattr_db(B *b, struct high_syntax *y)
 
 /* Drop a database, but only if no BWs refer to it */
 
-void drop_lattr_db(B *b, struct lattr_db *db)
+static void drop_lattr_db(B *b, struct lattr_db *db)
 {
 #ifdef junk
 	if (!lattr_db_in_use(db)) {

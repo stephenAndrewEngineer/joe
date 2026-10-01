@@ -24,16 +24,6 @@ struct kbd {
 	ptrdiff_t	x;	/* What we're up to */
 };
 
-/* KMAP *mkkmap(void);
- * Create an empty keymap
- */
-KMAP *mkkmap(void);
-
-/* void rmkmap(KMAP *kmap);
- * Free a key map
- */
-void rmkmap(KMAP *kmap);
-
 /* int kadd(KMAP *kmap,char *seq,void *bind);
  * Add a key sequence binding to a key map
  *

@@ -7,6 +7,23 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+/* Append step m to macro */
+static void addmacro(MACRO *macro, MACRO *m);
+
+/* Recursively duplicate a macro */
+static MACRO *dupmacro(MACRO *mac);
+
+/* Set key part of macro step */
+static MACRO *macstk(MACRO *m, int k);
+
+/* Set flag part of macro step */
+static MACRO *macsta(MACRO *m, int a);
+
+/* Convert macro to text.  Provide a buffer to write to in 's'. */
+static char *mtext(char *s, MACRO *m);
+
 MACRO *freemacros = NULL;
 
 /* Create a macro */
@@ -55,7 +72,7 @@ void rmmacro(MACRO *macro)
 
 /* Add a step to block macro */
 
-void addmacro(MACRO *macro, MACRO *m)
+static void addmacro(MACRO *macro, MACRO *m)
 {
 	if (macro->n == macro->size) {
 		if (macro->steps)
@@ -68,7 +85,7 @@ void addmacro(MACRO *macro, MACRO *m)
 
 /* Duplicate a macro */
 
-MACRO *dupmacro(MACRO *mac)
+static MACRO *dupmacro(MACRO *mac)
 {
 	MACRO *m = mkmacro(mac->k, mac->flg, mac->n, mac->cmd);
 
@@ -84,7 +101,7 @@ MACRO *dupmacro(MACRO *mac)
 
 /* Set key part of macro */
 
-MACRO *macstk(MACRO *m, int k)
+static MACRO *macstk(MACRO *m, int k)
 {
 	if (k != -1)
 		m->k = k;
@@ -93,7 +110,7 @@ MACRO *macstk(MACRO *m, int k)
 
 /* Set flg part of macro */
 
-MACRO *macsta(MACRO *m, int a)
+static MACRO *macsta(MACRO *m, int a)
 {
 	m->flg = a;
 	return m;
@@ -266,7 +283,7 @@ static char *domtext(MACRO *m, char *ptr, int *first, int *instr)
 	return ptr;
 }
 
-char *mtext(char *s, MACRO *m)
+static char *mtext(char *s, MACRO *m)
 {
 	int first = 1;
 	int instr = 0;

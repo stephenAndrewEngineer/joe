@@ -8,6 +8,13 @@
 
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+struct menu_instance {
+	struct rc_menu *menu;
+	char **s;
+};
+
 static B *menuhist = NULL; /* Menu history */
 static struct rc_menu *menus; /* All menus */
 static char **smenus = NULL; /* Completion list */

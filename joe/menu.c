@@ -7,6 +7,10 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+static char *find_longest(char **lst);
+
 int bg_menu;
 int bg_menusel = INVERSE;
 int bg_menumask = ~INVERSE;
@@ -691,7 +695,7 @@ static char *cull(char *a, char *b)
 	return vstrunc(a, x);
 }
 
-char *find_longest(char **lst)
+static char *find_longest(char **lst)
 {
 	char *com;
 	int x;

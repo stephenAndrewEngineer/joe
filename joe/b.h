@@ -181,7 +181,6 @@ B *bfind_reload(const char *s);
 P *pdup(P *p, const char *tr);
 P *pdupown(P *p, P **o, const char *tr);
 P *poffline(P *p);
-P *ponline(P *p);
 B *bonline(B *b);
 B *boffline(B *b);
 
@@ -199,8 +198,6 @@ int pisbof(P *p);
 int piseof(P *p);
 int piseol(P *p);
 int pisbol(P *p);
-int pisbow(P *p);
-int piseow(P *p);
 
 #define piscol(p) ((p)->valcol ? (p)->col : (pfcol(p), (p)->col))
 
@@ -208,10 +205,8 @@ int pisblank(P *p);
 int piseolblank(P *p);
 
 off_t pisindent(P *p);
-int pispure(P *p,int c);
 
 int pnext(P *p);
-int pprev(P *p);
 
 int pgetb(P *p);
 int prgetb(P *p);
@@ -244,8 +239,6 @@ P *prifind(P *p, const char *s, ptrdiff_t len);
 /* copy text between 'from' and 'to' into new buffer */
 B *bcpy(P *from, P *to);	
 
-void pcoalesce(P *p);
-
 void bdel(P *from, P *to);
 
 /* insert buffer 'b' into another at 'p' */
@@ -258,9 +251,6 @@ P *binsmq(P *p, const char *blk, ptrdiff_t amnt);
 
 /* insert character 'c' into buffer at 'p' */
 P *binsc(P *p, int c);
-
-/* insert byte 'c' into buffer at at 'p' */
-P *binsbyte(P *p, char c);
 
 /* insert zero term. string 's' into buffer at 'p' */
 P *binss(P *p, const char *s);
@@ -287,8 +277,6 @@ B *borphan(void);
 /* Save 'size' bytes beginning at 'p' into file with name in 's' */
 int bsave(P *p, const char *s, off_t size,int flag);
 int bsavefd(P *p, int fd, off_t size);
-
-char *parsens(const char *s, off_t *skip, off_t *amnt);
 
 char *canonical(char *s, int flags);
 #define CANFLAG_NORESTART 1 /* Support path restart feature */
@@ -343,7 +331,5 @@ void breplace(B *b, B *n);
 char *dequote(const char *);
 
 #define ANSI_BIT (int)(0x80000000)
-int ansi_code(char *s);
-char *ansi_string(int code);
 
 extern int guess_utf16;

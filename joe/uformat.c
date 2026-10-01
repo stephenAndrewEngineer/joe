@@ -7,6 +7,12 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+static P *pbop(BW *bw, P *p);
+
+static P *peop(BW *bw, P *p);
+
 /* Center line cursor is on and move cursor to beginning of next line */
 
 int ucenter(W *w, int k)
@@ -205,7 +211,7 @@ static off_t prefix(BW *bw, P *p,int up)
 
 int within = 0;
 
-P *pbop(BW *bw, P *p)
+static P *pbop(BW *bw, P *p)
 {
 	off_t indent;
 	off_t prelen;
@@ -275,7 +281,7 @@ P *pbop(BW *bw, P *p)
  *  3) A line with prefix column different from first line
  */
 
-P *peop(BW *bw, P *p)
+static P *peop(BW *bw, P *p)
 {
 	off_t indent;
 	off_t prelen;

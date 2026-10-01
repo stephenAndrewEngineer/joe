@@ -1008,8 +1008,8 @@ static void goback(SRCH *srch, BW *bw)
 	}
 }
 
-const char *rest_key = _("|rest of file|rR");
-const char *backup_key = _("|backup|bB");
+static const char *rest_key = _("|rest of file|rR");
+static const char *backup_key = _("|backup|bB");
 
 static int dopfrepl(W *w, int c, void *obj, int *notify)
 {

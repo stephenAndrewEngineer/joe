@@ -19,6 +19,14 @@
 #  define SHFT 1
 #endif
 
+/* Moved here from the headers: used only in this file */
+
+/* void **msetP(void **d,void *c,int sz); Set 'sz' pointers at 'd' to 'c'.
+ * If 'sz'==0 nothing happens
+ * Returns original value of 'd'
+ */
+static void **msetP(void **dest, void *c, ptrdiff_t sz);
+
 /* Set 'sz' 'int's beginning at 'd' to the value 'c' */
 /* Returns address of block.  Does nothing if 'sz' equals zero */
 
@@ -117,7 +125,7 @@ ptrdiff_t *msetD(ptrdiff_t *dest, ptrdiff_t c, ptrdiff_t sz)
 /* Set 'sz' 'int's beginning at 'd' to the value 'c' */
 /* Returns address of block.  Does nothing if 'sz' equals zero */
 
-void **msetP(void **d, void *c, ptrdiff_t sz)
+static void **msetP(void **d, void *c, ptrdiff_t sz)
 {
 	void	**orgd = d;
 

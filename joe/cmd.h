@@ -17,21 +17,11 @@ struct cmd {
 	const char *negarg;	/* Command to use if arg was negative */
 };
 
-extern CMD cmds[];		/* Built-in commands */
 extern int joe_beep;		/* Enable beep on command error */
 
 /* Command execution flags */
 
-#define EMID		  1	/* Recenter screen */
-#define ECHKXCOL	  2	/* Don't execute command if cursor column is wrong */
-#define EFIXXCOL	  4	/* Fix column position after command has executed */
 #define EMINOR		  8	/* Full screen update not needed */
-#define EPOS		 16	/* A position history command */
-#define EMOVE		 32	/* A movement for position history purposes */
-#define EKILL		 64	/* Function is a kill */
-#define EMOD		128	/* Not allowed on readonly files */
-/* These use same bits as TYPE* in types.h */
-#define EBLOCK		0x4000	/* Finish block selection (call udropon) */
 #define EMETA		0x10000	/* JM: Executes even when if flag is zero */
 
 /* CMD *findcmd(char *s);
@@ -46,10 +36,7 @@ void do_auto_scroll();
 
 extern B *cmdhist; /* Command history buffer */
 
-int try_lock(BW *bw,B *b);
 int modify_logic(BW *bw,B *b);
-
-int uexecmd(W *w, int k);
 
 extern int nolocks; /* Disable file locking */
 extern int nomodcheck; /* Disable file modified check */

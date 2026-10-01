@@ -23,6 +23,29 @@
 #endif
 #endif
 
+/* Moved here from the headers: used only in this file */
+
+static P *ponline(P *p);
+
+static int pisbow(P *p);
+
+static int piseow(P *p);
+
+static int pispure(P *p,int c);
+
+static int pprev(P *p);
+
+static void pcoalesce(P *p);
+
+/* insert byte 'c' into buffer at at 'p' */
+static P *binsbyte(P *p, char c);
+
+static char *parsens(const char *s, off_t *skip, off_t *amnt);
+
+static int ansi_code(char *s);
+
+static char *ansi_string(int code);
+
 extern int errno;
 
 #ifdef WITH_SELINUX
@@ -450,7 +473,7 @@ P *poffline(P *p)
 	return p;
 }
 
-P *ponline(P *p)
+static P *ponline(P *p)
 {
 	if (!p->ptr)
 		p->ptr = vlock(vmem, p->hdr->seg);
@@ -607,7 +630,7 @@ int pisbol(P *p)
 }
 
 /* is p at the beginning of word? */
-int pisbow(P *p)
+static int pisbow(P *p)
 {
 	P *q = pdup(p, "pisbow");
 	int c = brch(p);
@@ -621,7 +644,7 @@ int pisbow(P *p)
 }
 
 /* is p at the end of word? */
-int piseow(P *p)
+static int piseow(P *p)
 {
 	P *q = pdup(p, "piseow");
 	int d = brch(q);
@@ -683,7 +706,7 @@ off_t pisindent(P *p)
 
 /* return true if all characters to left of cursor match c */
 
-int pispure(P *p,int c)
+static int pispure(P *p,int c)
 {
 	P *q = pdup(p, "pispure");
 	if (c < 0)
@@ -711,7 +734,7 @@ int pnext(P *p)
 	return 1;
 }
 
-int pprev(P *p)
+static int pprev(P *p)
 {
 	if (p->hdr == p->b->bof->hdr) {
 		p->ofst = 0;
@@ -766,7 +789,7 @@ struct ansi_entry **ansi_table;
 int ansi_siz;
 int ansi_len;
 
-int ansi_code(char *s)
+static int ansi_code(char *s)
 {
 	struct ansi_entry *e;
 	if (!ansi_hash)
@@ -786,7 +809,7 @@ int ansi_code(char *s)
 	return (e->code | ANSI_BIT);
 }
 
-char *ansi_string(int code)
+static char *ansi_string(int code)
 {
 	code &= ~ANSI_BIT;
 	if (code < 0 || code >= ansi_len)
@@ -1755,7 +1778,7 @@ B *bcpy(P *from, P *to)
 }
 
 /* Coalesce small blocks into a single larger one */
-void pcoalesce(P *p)
+static void pcoalesce(P *p)
 {
 	if (p->hdr != p->b->eof->hdr && GSIZE(p->hdr) + GSIZE(p->hdr->link.next) <= SEGSIZ - SEGSIZ / 4) {
 		H *hdr = p->hdr->link.next;
@@ -2255,7 +2278,7 @@ P *binsmq(P *p, const char *blk, ptrdiff_t amnt)
 }
 
 /* insert byte 'c' at 'p' */
-P *binsbyte(P *p, char c)
+static P *binsbyte(P *p, char c)
 {
 	if (p->b->o.crlf && c == '\n')
 		return binsm(p, "\r\n", 2);
@@ -2517,7 +2540,7 @@ B *bread(int fi, off_t max)
  *
  * Returns new variable length string.
  */
-char *parsens(const char *s, off_t *skip, off_t *amnt)
+static char *parsens(const char *s, off_t *skip, off_t *amnt)
 {
 	char *n = vsncpy(NULL, 0, sz(s));
 	ptrdiff_t x;

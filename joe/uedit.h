@@ -29,8 +29,6 @@ int uuparw(W *w, int k);
 int udnarw(W *w, int k);
 int utos(W *w, int k);
 int ubos(W *w, int k);
-void scrup(BW *bw, ptrdiff_t n, int flg);
-void scrdn(BW *bw, ptrdiff_t n, int flg);
 int upgup(W *w, int k);
 int upgdn(W *w, int k);
 int uupslide(W *w, int k);

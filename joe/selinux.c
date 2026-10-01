@@ -9,6 +9,14 @@
 static int selinux_enabled = -1;
 #endif
 
+/* Moved here from the headers: used only in this file */
+
+static int match_default_security_context(const char *from_file);
+
+static int reset_default_security_context();
+
+static int output_security_context(const char *from_file);
+
 int
 copy_security_context(const char *from_file, const char *to_file)
 {
@@ -60,7 +68,7 @@ copy_security_context(const char *from_file, const char *to_file)
 	return status;
 }
 
-int match_default_security_context(const char *from_file)
+static int match_default_security_context(const char *from_file)
 {
 #ifdef WITH_SELINUX
 	security_context_t scontext;
@@ -98,7 +106,7 @@ int match_default_security_context(const char *from_file)
 }
 
 
-int reset_default_security_context()
+static int reset_default_security_context()
 {
 #ifdef WITH_SELINUX
 	if (selinux_enabled == -1)
@@ -116,7 +124,7 @@ int reset_default_security_context()
 }
 
 
-int output_security_context(const char *from_file)
+static int output_security_context(const char *from_file)
 {
 #ifdef WITH_SELINUX
 	security_context_t scontext;

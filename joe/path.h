@@ -47,25 +47,12 @@ char *begprt(const char *path);
  */
 char *endprt(const char *path);
 
-/* int mkpath(char *path);
- * Make sure path exists.  If it doesn't, try to create it
- *
- * Returns 1 for error or 0 for success.  The current directory
- * and drive will be at the given path if successful, otherwise
- * the drive and path will be elsewhere (not necessarily where they
- * were before mkpath was called).
- */
-int mkpath(char *path);
-
 /* char *mktmp(char *);
  * Create an empty temporary file.  The file name created is the string passed
  * to this function postfixed with /joe.tmp.XXXXXX, where XXXXXX is some
  * string six chars long which makes this file unique.
 */
 char *mktmp(const char *where);
-
-/* Change drive and directory */
-#define chddir chdir
 
 /* int rmatch(char *pattern,char *string);
  * Return true if string matches pattern

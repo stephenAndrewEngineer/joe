@@ -33,12 +33,6 @@ int *msetI(int *dest, int c, ptrdiff_t sz);
  */
 ptrdiff_t *msetD(ptrdiff_t *dest, ptrdiff_t c, ptrdiff_t sz);
 
-/* void **msetP(void **d,void *c,int sz); Set 'sz' pointers at 'd' to 'c'.
- * If 'sz'==0 nothing happens
- * Returns original value of 'd'
- */
-void **msetP(void **dest, void *c, ptrdiff_t sz);
-
 /* int mcnt(char *blk,char c,ptrdiff_t size);
  *
  * Count the number of occurrences a character appears in a block

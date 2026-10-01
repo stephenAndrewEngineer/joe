@@ -16,7 +16,7 @@ int undo_keep = 100; /* Number of undo records to keep */
 static UNDO undos = { {&undos, &undos} };
 static UNDO frdos = { {&frdos, &frdos} };
 
-int inundo = 0;
+static int inundo = 0;
 int inredo = 0;	/* Turns off recording of undo records */
 
 UNDOREC yanked = { {&yanked, &yanked} };

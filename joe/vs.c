@@ -7,7 +7,52 @@
  */
 #include "types.h"
 
-int sicmp(char a, char b)
+/* Moved here from the headers: used only in this file */
+
+/* Duplicate an element */
+/* sELEMENT sdup(); */
+#define sdup(a) (a)
+
+/* Delete an element */
+/* sELEMENT sdel(); */
+#define sdel(a) do {} while(0)		/* effectively do nothing ;-) */
+
+/* Compare a single element */
+/* int scmp(); */
+#define scmp(a, b) ((a) > (b) ? 1 : ((a) == (b) ? 0 : -1))
+
+/* Compare a single element- case insensitive */
+static int sicmp(char a, char b);
+
+/* A blank element */
+/* extern sELEMENT sblank; */
+#define sblank ' '
+
+/* sELEMENT *vsndup(sELEMENT *vary, int pos, sELEMENT *array, int len));
+ * Duplicate 'len' elements from 'array' onto 'vary' beginning at position
+ * 'pos'.  'array' can be a char array since its length is passed separately.  A
+ * new array is created if 'vary' is 0.
+ */
+static sELEMENT *vsndup(sELEMENT *vary, ptrdiff_t pos, sELEMENT *array, ptrdiff_t len);
+
+/* int vsbsearch(sELEMENT *ary, int len, sELEMENT element);
+ * Do a binary search on a sorted variable length or char array.  Returns position
+ * of matching element or the position where the element should be if it was
+ * not found.  (You should test with scmp to find out which).
+ *
+ * Hmm... this should really indicate whether or not the element was found.
+ */
+static ptrdiff_t vsbsearch(const sELEMENT *ary, ptrdiff_t len, sELEMENT el);
+
+/* int vscmpn(sELEMENT *a, int alen, sELEMENT *b, int blen);
+ *
+ * Compare two arrays using scmp.  If 'a' > 'b', return 1.  If 'a' == 'b',
+ * return 0.  If 'a' < 'b', return -1.  Longer strings are > shorter ones if
+ * their beginning match.
+ */
+static int vscmpn(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen);
+
+static int sicmp(char a, char b)
 {
 	if (a >= 'A' && a <= 'Z')
 		a = (char)(a + 'a' - 'A');
@@ -102,7 +147,7 @@ sELEMENT *vsncpy(sELEMENT *vary, ptrdiff_t pos, const sELEMENT *array, ptrdiff_t
 	return vary;
 }
 
-sELEMENT *vsndup(sELEMENT *vary, ptrdiff_t pos, sELEMENT *array, ptrdiff_t len)
+static sELEMENT *vsndup(sELEMENT *vary, ptrdiff_t pos, sELEMENT *array, ptrdiff_t len)
 {
 	ptrdiff_t olen = sLEN(vary), x;
 
@@ -185,7 +230,7 @@ sELEMENT *vssort(sELEMENT *ary, ptrdiff_t len)
 
 #endif
 
-ptrdiff_t vsbsearch(const sELEMENT *ary, ptrdiff_t len, sELEMENT el)
+static ptrdiff_t vsbsearch(const sELEMENT *ary, ptrdiff_t len, sELEMENT el)
 {
 	ptrdiff_t x, y, z;
 
@@ -240,7 +285,7 @@ ptrdiff_t vslast(sELEMENT *ary, ptrdiff_t len, sELEMENT el)
 
 #endif
 
-int vscmpn(sELEMENT *a, ptrdiff_t myalen, sELEMENT *b, ptrdiff_t blen)
+static int vscmpn(sELEMENT *a, ptrdiff_t myalen, sELEMENT *b, ptrdiff_t blen)
 {
 	ptrdiff_t x, l;
 	int t;

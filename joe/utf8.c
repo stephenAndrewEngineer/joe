@@ -7,6 +7,14 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+#define UTF16_ACCEPTED -257
+
+#define UTF16_INCOMPLETE -258
+
+#define UTF16_BAD -259
+
 /* UTF-8 Encoder
  *
  * c is Unicode character.

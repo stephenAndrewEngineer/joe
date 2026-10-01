@@ -52,11 +52,7 @@ struct mpx {
  */
 void ttopen(void);
 void ttopnn(void);
-extern long upc; /* Microseconds per character */
 extern long tty_baud; /* Baud rate */
-
-#define TIMES 3
-#define DIVIDEND 10000000
 
 /* void ttclose(void);  Restore the tty back to its original mode.
  *
@@ -163,13 +159,6 @@ void ttgtsz(ptrdiff_t *x, ptrdiff_t *y);
  * may be needed to make your own shell escape sequences.
  */
 
-/* void sigjoe(void);  Set the signal handling for joe.  I.E., ignore all
- * signals the user can generate from the keyboard (SIGINT, SIGPIPE)
- * and trap the software terminate and hangup signals (SIGTERM, SIGHUP) so
- * that 'ttsig' gets called.
- */
-void sigjoe(void);
-
 /* void signrm(void);  Set above signals back to their default values.
  */
 void signrm(void);
@@ -190,9 +179,6 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 
 extern int noxon;			/* Set if ^S/^Q processing should be disabled */
 extern int Baud;			/* Baud rate from joerc, cmd line or environment */
-
-void tickoff(void);
-void tickon(void);
 
 extern time_t last_time; /* Current time in seconds */
 extern int idleout; /* Clear to use /dev/tty for screen */

@@ -7,6 +7,37 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+/* W *findtopw(W *);
+ * Find first (top-most) window of a family
+ */
+static W *findtopw(W *w);
+
+/* int wprev(Screen *);
+ *
+ * Switch to previous window
+ */
+static int wprev(Screen *t);
+
+/* int wgrow(W *);
+ *
+ * increase size of window.  Return 0 for success, -1 for fail.
+ */
+static int wgrow(W *w);
+
+/* int wshrink(W *);
+ *
+ * Decrease size of window.  Returns 0 for success, -1 for fail.
+ */
+static int wshrink(W *w);
+
+/* void wshowone(W *);
+ *
+ * Show only one window on the screen
+ */
+static void wshowone(W *w);
+
 /* Count no. of main windows */
 
 int countmain(Screen *t)
@@ -32,7 +63,7 @@ void wredraw(W *w)
 
 /* Find first window in a group */
 
-W *findtopw(W *w)
+static W *findtopw(W *w)
 {
 	W *x;
 
@@ -419,7 +450,7 @@ int wnext(Screen *t)
 
 /* Goto previous window */
 
-int wprev(Screen *t)
+static int wprev(Screen *t)
 {
 	if (t->curwin->link.prev != t->curwin) {
 		t->curwin = t->curwin->link.prev;
@@ -434,7 +465,7 @@ int wprev(Screen *t)
 
 /* Grow window */
 
-int wgrow(W *w)
+static int wgrow(W *w)
 {
 	W *nextw;
 
@@ -463,7 +494,7 @@ int wgrow(W *w)
 
 /* Shrink window */
 
-int wshrink(W *w)
+static int wshrink(W *w)
 {
 	W *nextw;
 
@@ -581,7 +612,7 @@ static void wspread(Screen *t)
 
 /* Show just one family of windows */
 
-void wshowone(W *w)
+static void wshowone(W *w)
 {
 	W *q = w->t->topwin;
 

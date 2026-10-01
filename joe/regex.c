@@ -7,6 +7,28 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+#define MAX_MATCHES 10
+
+#define MAX_THREADS 50
+
+enum {
+	/* Code >= 0: Match a single specific character */
+	iDOT = -512,	/* Match any single character */
+	iEXPR,	/* Match any single character, but skip entire expressions */
+	iBOL,	/* Match beginning of line */
+	iEOL,	/* Match end of line */
+	iBOW,	/* Match beginning of word */
+	iEOW,	/* Match end of word */
+	iBRA,	/* Opening parenthesis.  Parenthesis number follows. */
+	iKET,	/* Close parenthesis.  Parenthesis number follows. */
+	iFORK,	/* Alternate paths. */
+	iJUMP,	/* Jump, don't eat char. */
+	iCLASS,	/* Character class (address of struct range_map follows) */
+	iEND,	/* End of expression. */
+};
+
 /* Parse one character.  It can be UTF-8 if utf8 is set.  b has pointer to string length or NULL for zero-terminated strings */
 
 /* Returns the character or -256 for a category (in which case *cat is filled in if it's not NULL) */

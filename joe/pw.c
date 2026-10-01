@@ -7,6 +7,16 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+static void cmplt_ins(BW *bw,char *line);
+
+static int cmplt_abrt(W *w,ptrdiff_t x,void *obj);
+
+static int cmplt_rtn(MENU *m,ptrdiff_t x,void *obj, int k);
+
+static void promote_history(B *hist, off_t line);
+
 /* The current directory */
 
 int bg_prompt;
@@ -110,7 +120,7 @@ void append_history(B *hist,char *s,ptrdiff_t len)
 
 /* Promote line to end of history buffer */
 
-void promote_history(B *hist, off_t line)
+static void promote_history(B *hist, off_t line)
 {
 	P *q = pdup(hist->bof, "promote_history");
 	P *r;
@@ -317,7 +327,7 @@ char **regsub(char **z, ptrdiff_t len, char *s)
 	return lst;
 }
 
-void cmplt_ins(BW *bw, char *line)
+static void cmplt_ins(BW *bw, char *line)
 {
 	P *p = pdup(bw->cursor, "cmplt_ins");
 
@@ -360,7 +370,7 @@ static void word_ins(BW *bw, char *line)
 	bw->cursor->xcol = piscol(bw->cursor);
 }
 
-int cmplt_abrt(W *w, ptrdiff_t x, void *object)
+static int cmplt_abrt(W *w, ptrdiff_t x, void *object)
 {
 	char *line = (char *)object;
 	if (line) {
@@ -370,7 +380,7 @@ int cmplt_abrt(W *w, ptrdiff_t x, void *object)
 	return -1;
 }
 
-int cmplt_rtn(MENU *m, ptrdiff_t x, void *object, int k)
+static int cmplt_rtn(MENU *m, ptrdiff_t x, void *object, int k)
 {
 	char *line = (char *)object;
 	cmplt_ins((BW *)m->parent->win->object, m->list[x]);

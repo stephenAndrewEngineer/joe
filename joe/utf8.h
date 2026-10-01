@@ -46,7 +46,6 @@ int utf8_decode_fwrd(const char **p,ptrdiff_t *plen);
 
 void utf8_init(struct utf8_sm *utf8_sm);
 
-
 /* Get next character from string and advance it, locale dependent */
 
 int fwrd_c(struct charmap *map, const char **s, ptrdiff_t *len);
@@ -74,10 +73,6 @@ struct utf16_sm {
  *    -258: incomplete sequence
  *    -259: no sequence started, but character is between 0xDC00 - 0xDFFF
  */
-
-#define UTF16_ACCEPTED -257
-#define UTF16_INCOMPLETE -258
-#define UTF16_BAD -259
 
 int utf16_decode(struct utf16_sm *sm, unsigned short c);
 int utf16r_decode(struct utf16_sm *sm, unsigned short c);

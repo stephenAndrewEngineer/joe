@@ -30,6 +30,12 @@
 #       include <langinfo.h>
 #endif
 
+/* Moved here from the headers: used only in this file */
+
+static int from_utf8(struct charmap *map,const char *s);
+
+static void to_utf8(struct charmap *map,char *s,int c);
+
 /* nl_langinfo(CODESET) is broken on many systems.  If HAVE_SETLOCALE is undefined,
    JOE uses a limited internal version instead */
 
@@ -42,7 +48,7 @@ int to_uni(struct charmap *cset, int c)
 	return cset->to_map[c];
 }
 
-void to_utf8(struct charmap *map,char *s,int c)
+static void to_utf8(struct charmap *map,char *s,int c)
 {
 	int d = to_uni(map,c);
 
@@ -76,7 +82,7 @@ int from_uni(struct charmap *cset, int c)
 	return -1;
 }
 
-int from_utf8(struct charmap *map,const char *s)
+static int from_utf8(struct charmap *map,const char *s)
 {
 	int d = utf8_decode_string(s);
 	int c = from_uni(map,d);
@@ -1579,7 +1585,7 @@ const char *codeset;	/* Codeset of terminal */
 const char *non_utf8_codeset;
 			/* Codeset of local language non-UTF-8 */
 
-const char *locale_lang;
+static const char *locale_lang;
 			/* Our local language */
 
 const char *locale_msgs;

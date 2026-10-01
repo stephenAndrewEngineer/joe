@@ -2,6 +2,26 @@
 
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+static ptrdiff_t emitb_noalign(Frag *f, char c);
+
+static ptrdiff_t emitb(Frag *f, char c);
+
+static ptrdiff_t emith(Frag *f, short n);
+
+static ptrdiff_t emitd(Frag *f, double d);
+
+static ptrdiff_t emits(Frag *f, unsigned char *s, int len);
+
+#define fragh(f, ofst) (*(short *)((f)->start + (ofst)))
+
+#define fragi(f, ofst) (*(int *)((f)->start + (ofst)))
+
+#define fragp(f, ofst) (*(void **)((f)->start + (ofst)))
+
+static short fetchh(Frag *f, ptrdiff_t *pc);
+
 /* Initialize a fragment */
 
 void iz_frag(Frag *f, ptrdiff_t alignment)
@@ -40,7 +60,7 @@ static void expand_frag(Frag *frag, ptrdiff_t size)
 
 /* Emit a byte: this does no alignment */
 
-ptrdiff_t emitb_noalign(Frag *f, char c)
+static ptrdiff_t emitb_noalign(Frag *f, char c)
 {
 	ptrdiff_t start;
 	if (f->len + SIZEOF(unsigned char) > f->size)
@@ -62,7 +82,7 @@ void align_frag(Frag *f,ptrdiff_t alignment)
 
 /* Emit a byte and align */
 
-ptrdiff_t emitb(Frag *f, char c)
+static ptrdiff_t emitb(Frag *f, char c)
 {
 	ptrdiff_t ofst = emitb_noalign(f, c);
 	if (f->len & (f->align - 1))
@@ -72,7 +92,7 @@ ptrdiff_t emitb(Frag *f, char c)
 
 /* Emit a short */
 
-ptrdiff_t emith(Frag *f, short c)
+static ptrdiff_t emith(Frag *f, short c)
 {
 	ptrdiff_t start;
 	if (f->len & (SIZEOF(short) - 1))
@@ -106,7 +126,7 @@ ptrdiff_t emiti(Frag *f, int c)
 
 /* Emit a double */
 
-ptrdiff_t emitd(Frag *f, double d)
+static ptrdiff_t emitd(Frag *f, double d)
 {
 	ptrdiff_t start;
 	if (f->len & (SIZEOF(double) - 1))
@@ -140,7 +160,7 @@ ptrdiff_t emitp(Frag *f, void *p)
 
 /* Append a string to the code block */
 
-ptrdiff_t emits(Frag *f, unsigned char *s, int len)
+static ptrdiff_t emits(Frag *f, unsigned char *s, int len)
 {
 	ptrdiff_t start;
 
@@ -189,7 +209,7 @@ void frag_link(Frag *f, ptrdiff_t chain)
 	}
 }
 
-short fetchh(Frag *f, ptrdiff_t *pcp)
+static short fetchh(Frag *f, ptrdiff_t *pcp)
 {
 	ptrdiff_t pc = *pcp;
 	short i;

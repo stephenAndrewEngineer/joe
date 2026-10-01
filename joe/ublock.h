@@ -10,10 +10,6 @@ extern int square; /* Column / rectangular block mode */
 extern int lightoff; /* Automatic turn off highlighting */
 extern P *markb, *markk; /* ^KB and ^KK positions */
 
-void pinsrect(P *cur, B *tmp, off_t width, int usetabs);
-int ptabrect(P *org, off_t height, off_t right);
-void pclrrect(P *org, off_t height, off_t right, int usetabs);
-void pdelrect(P *org, off_t height, off_t right);
 B *pextrect(P *org, off_t height, off_t right);
 int markv(int r);
 int umarkb(W *w, int k);
@@ -29,7 +25,6 @@ int ublkmove(W *w, int k);
 int ublkcpy(W *w, int k);
 int dowrite(W *w, char *s, void *object, int *notify);
 int doinsf(W *w, char *s, void *object, int *notify);
-void setindent(BW *bw);
 int urindent(W *w, int k);
 int ulindent(W *w, int k);
 int ufilt(W *w, int k);

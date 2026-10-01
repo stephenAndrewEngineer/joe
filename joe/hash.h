@@ -19,9 +19,6 @@ struct Hash {
 	ptrdiff_t nentries;
 };
 
-/* Compute hash code for a string */
-ptrdiff_t hash(const char *s);
-
 /* Create a hash table of specified size, which must be a power of 2 */
 HASH *htmk(ptrdiff_t len);
 
@@ -37,7 +34,6 @@ void *htfind(HASH *ht, const char *name);
 
 /* Interned string (atom) table */
 const char *atom_add(const char *name);
-const char *atom_noadd(const char *name);
 
 /* Same as above, but for Z-strings: strings made up of integers instead of chars */
 
@@ -54,14 +50,8 @@ struct Zhash {
 	ptrdiff_t nentries;
 };
 
-/* Compute hash code for a string */
-ptrdiff_t zhash(const int *s);
-
 /* Create a hash table of specified size, which must be a power of 2 */
 ZHASH *Zhtmk(ptrdiff_t len);
-
-/* Delete a hash table.  HENTRIES get freed, but name/vals don't. */
-void Zhtrm(ZHASH *ht);
 
 /* Add an entry to a hash table.
   Note: 'name' is _not_ strdup()ed */
@@ -72,4 +62,3 @@ void *Zhtfind(ZHASH *ht, const int *name);
 
 /* Interned string (atom) table */
 const int *Zatom_add(const int *name);
-const int *Zatom_noadd(const int *name);

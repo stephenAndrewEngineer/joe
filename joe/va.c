@@ -7,6 +7,72 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+/* aELEMENT adup(); */
+#define adup(s) vsdup(s)
+
+/* int acmp(); */
+#define acmp(a,b) vscmp((a),(b))
+
+/* extern aELEMENT ablank; */
+#define ablank NULL
+
+/* int aSIZ(aELEMENT *vary);
+ * int aSiz(aELEMENT *vary);
+ * Access size part of array.  This int indicates the number of elements which
+ * can fit in the array before realloc needs to be called.  It does not include
+ * the extra space needed for the terminator and the header.
+ *
+ * aSIZ returns 0 if you pass it 0.  aSiz does not do this checking,
+ * but can be used as an lvalue.
+ */
+#define aSIZ(a) ((a) ? *((ptrdiff_t *)(a) - 2) : 0)
+
+/* aELEMENT *vazap(aELEMENT *vary, int pos, int n);
+ * Destroy n elements from an array beginning at pos.  Is ok if pos/n go
+ * past end of array.  This does not change the aLEN() value of the array.
+ * This does nothing and returns 0 if 'vary' is 0.  Note that this
+ * function does not actually write to the array.  This does not stop if
+ * a aterm is encountered.
+ */
+static aELEMENT *vazap(aELEMENT *vary, ptrdiff_t pos, ptrdiff_t n);
+
+/* aELEMENT *vafill(aELEMENT *vary, int pos, aELEMENT el, int len);
+ * Set 'len' element of 'vary' beginning at 'pos' to duplications of 'el'.
+ * Ok, if pos/len are past end of array.  If 'vary' is 0, a new array is
+ * created.
+ *
+ * This does not zap previous values.  If you need that to happen, call
+ * vazap first.  It does move the terminator around properly though.
+ */
+static aELEMENT *vafill(aELEMENT *vary, ptrdiff_t pos, aELEMENT el, ptrdiff_t len);
+
+/* aELEMENT *vandup(aELEMENT *vary, int pos, aELEMENT *array, int len);
+ * Duplicate 'len' elements from 'array' onto 'vary' beginning at position
+ * 'pos'.  'array' can be a char array since its length is passed separately.  A
+ * new array is created if 'vary' is 0.
+ */
+static aELEMENT *vandup(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len);
+
+/* aELEMENT *vadup(aELEMENT *vary);
+ * Duplicate array.  This is just a functionalized version of:
+ *
+ *   vandup(NULL,0,vary,aLEN(vary));
+ *
+ * but since you need to be able to refer to this particular function by
+ * address often it's given here.
+ *
+ * (actually, there's bazillions of these simple combinations of the above
+ * functions and the macros of the next section.  You'll probably want to make
+ * functionalized instances of the ones you use most often - especially since
+ * the macros aren't safe).
+ */
+static aELEMENT *vadup(aELEMENT *vary);
+
+/* Delete elements from an array */
+static void vadel(aELEMENT *ary, ptrdiff_t ofset, ptrdiff_t len);
+
 aELEMENT *vamk(ptrdiff_t len)
 {
 	ptrdiff_t *newa = (ptrdiff_t *) joe_malloc((1 + len) * SIZEOF(aELEMENT) + 2 * SIZEOF(ptrdiff_t));
@@ -49,7 +115,7 @@ aELEMENT *vaensure(aELEMENT *vary, ptrdiff_t len)
 	return vary;
 }
 
-aELEMENT *vazap(aELEMENT *vary, ptrdiff_t pos, ptrdiff_t n)
+static aELEMENT *vazap(aELEMENT *vary, ptrdiff_t pos, ptrdiff_t n)
 {
 	if (vary) {
 		ptrdiff_t x;
@@ -81,7 +147,7 @@ aELEMENT *vatrunc(aELEMENT *vary, ptrdiff_t len)
 	return vary;
 }
 
-aELEMENT *vafill(aELEMENT *vary, ptrdiff_t pos, aELEMENT el, ptrdiff_t len)
+static aELEMENT *vafill(aELEMENT *vary, ptrdiff_t pos, aELEMENT el, ptrdiff_t len)
 {
 	ptrdiff_t olen = aLEN(vary), x;
 
@@ -116,7 +182,7 @@ aELEMENT *vancpy(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len)
 }
 #endif
 
-aELEMENT *vandup(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len)
+static aELEMENT *vandup(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len)
 {
 	ptrdiff_t olen = aLEN(vary), x;
 
@@ -133,7 +199,7 @@ aELEMENT *vandup(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len)
 	return vary;
 }
 
-aELEMENT *vadup(aELEMENT *vary)
+static aELEMENT *vadup(aELEMENT *vary)
 {
 	return vandup(NULL, 0, vary, aLEN(vary));
 }
@@ -171,7 +237,7 @@ aELEMENT *vasort(aELEMENT *ary, ptrdiff_t len)
 	return ary;
 }
 
-void vadel(aELEMENT *ary, ptrdiff_t ofst, ptrdiff_t len)
+static void vadel(aELEMENT *ary, ptrdiff_t ofst, ptrdiff_t len)
 {
 	if (ary && ofst < aLen(ary)) {
 		ptrdiff_t x;

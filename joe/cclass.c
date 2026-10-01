@@ -8,6 +8,81 @@
 
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+/* Sort an struct interval array */
+static void interval_sort(struct interval *array, ptrdiff_t size);
+
+static struct interval_list *mkinterval(struct interval_list *next, int first, int last, void *map);
+
+static void rminterval(struct interval_list *item);
+
+/* Add set of intervals (a character class) to an interval list */
+static struct interval_list *interval_set(struct interval_list *list, struct interval *array, int size, void *map);
+
+static void interval_show(struct interval_list *list);
+
+#define LEAFMASK 0xF
+
+#define LEAFSHIFT 0
+
+#define THIRDSIZE 32
+
+#define THIRDMASK 0x1f
+
+#define THIRDSHIFT 4
+
+#define SECONDMASK 0x1f
+
+#define SECONDSHIFT 9
+
+#define TOPMASK 0x7f
+
+#define TOPSHIFT 14
+
+static void rset_init(struct Rset *r);
+
+static void rset_clr(struct Rset *r);
+
+static int rset_lookup(struct Rset *r, int ch);
+
+static int rset_lookup_unopt(struct Rset *r, int ch);
+
+static void rset_add(struct Rset *r, int ch, int che);
+
+static void rset_opt(struct Rset *r);
+
+static void rset_set(struct Rset *r, struct interval *array, ptrdiff_t size);
+
+static void rset_show(struct Rset *r);
+
+static void *rtree_lookup_unopt(struct Rtree *r, int ch);
+
+static void rtree_add(struct Rtree *r, int ch, int che, void *map);
+
+static void rtree_show(struct Rtree *r);
+
+static void rmap_clr(struct Rtree *r);
+
+static int rmap_lookup_unopt(struct Rtree *r, int ch, int dflt);
+
+static void rmap_set(struct Rtree *r, struct interval *array, ptrdiff_t len, int map, int dflt);
+
+static void rmap_show(struct Rtree *r);
+
+/* Free memory used by a Cclass (does not free cclass itself) */
+static void cclass_clr(struct Cclass *cclass);
+
+/* Remove a range to a character class */
+static void cclass_sub(struct Cclass *cclass, int first, int last);
+
+/* Subtract one character class from another */
+static void cclass_diff(struct Cclass *cclass, struct Cclass *n);
+
+/* Lookup a character in a character class using binary search.
+   Return true if character is in the class. */
+static int cclass_lookup_unopt(struct Cclass *m, int ch);
+
 /* Sort an array of struct intervals */
 
 static int itest(const void *ia, const void *ib)
@@ -22,7 +97,7 @@ static int itest(const void *ia, const void *ib)
 		return 0;
 }
 
-void interval_sort(struct interval *array, ptrdiff_t num)
+static void interval_sort(struct interval *array, ptrdiff_t num)
 {
 	jsort(array, num, SIZEOF(struct interval), itest);
 }
@@ -52,7 +127,7 @@ ptrdiff_t interval_test(struct interval *array, ptrdiff_t size, int ch)
 	return -1;
 }
 
-struct interval_list *mkinterval(struct interval_list *next, int first, int last, void *map)
+static struct interval_list *mkinterval(struct interval_list *next, int first, int last, void *map)
 {
 	struct interval_list *interval_list = (struct interval_list *)joe_malloc(SIZEOF(struct interval_list));
 	interval_list->next = next;
@@ -62,7 +137,7 @@ struct interval_list *mkinterval(struct interval_list *next, int first, int last
 	return interval_list;
 }
 
-void rminterval(struct interval_list *interval_list)
+static void rminterval(struct interval_list *interval_list)
 {
 	while (interval_list) {
 		struct interval_list *n = interval_list->next;
@@ -144,7 +219,7 @@ struct interval_list *interval_add(struct interval_list *interval_list, int firs
 
 /* Add a list of intervals (typically representing a character class) to an interval list */
 
-struct interval_list *interval_set(struct interval_list *interval_list, struct interval *list, int size, void *map)
+static struct interval_list *interval_set(struct interval_list *interval_list, struct interval *list, int size, void *map)
 {
 	int x;
 	for (x = 0; x != size; ++x)
@@ -164,7 +239,7 @@ void *interval_lookup(struct interval_list *list, void *dflt, int item)
 	return dflt;
 }
 
-void interval_show(struct interval_list *list)
+static void interval_show(struct interval_list *list)
 {
 	logmessage_1("Interval list at %p\n", list);
 	while (list) {
@@ -175,7 +250,7 @@ void interval_show(struct interval_list *list)
 
 /* Return true if character ch is in radix tree r */
 
-int rset_lookup(struct Rset *r, int ch)
+static int rset_lookup(struct Rset *r, int ch)
 {
 	int a, b, c, d;
 
@@ -208,7 +283,7 @@ int rset_lookup(struct Rset *r, int ch)
 
 /* Same as above, but can be be called before rset_opt() */
 
-int rset_lookup_unopt(struct Rset *r, int ch)
+static int rset_lookup_unopt(struct Rset *r, int ch)
 {
 	int a, b, c, d;
 	int idx;
@@ -231,7 +306,7 @@ int rset_lookup_unopt(struct Rset *r, int ch)
 	return 0;
 }
 
-void rset_init(struct Rset *r)
+static void rset_init(struct Rset *r)
 {
 	int x;
 	for (x = 0; x != TOPSIZE; ++x)
@@ -246,7 +321,7 @@ void rset_init(struct Rset *r)
 	r->third.table.c = (struct Mid *)joe_malloc(r->third.size * SIZEOF(struct Mid));
 }
 
-void rset_clr(struct Rset *r)
+static void rset_clr(struct Rset *r)
 {
 	joe_free(r->second.table.b);
 	joe_free(r->third.table.c);
@@ -285,7 +360,7 @@ static short rset_alloc(struct Level *l, int levelno)
 	return (short)l->alloc++;
 }
 
-void rset_add(struct Rset *r, int ch, int che)
+static void rset_add(struct Rset *r, int ch, int che)
 {
 	int a = (TOPMASK & (ch >> TOPSHIFT));
 	int b = (SECONDMASK & (ch >> SECONDSHIFT));
@@ -332,7 +407,7 @@ void rset_add(struct Rset *r, int ch, int che)
 
 /* Optimize radix tree: setup mid */
 
-void rset_opt(struct Rset *r)
+static void rset_opt(struct Rset *r)
 {
 	int x;
 	int idx;
@@ -348,7 +423,7 @@ void rset_opt(struct Rset *r)
 	}
 }
 
-void rset_set(struct Rset *r, struct interval *array, ptrdiff_t size)
+static void rset_set(struct Rset *r, struct interval *array, ptrdiff_t size)
 {
 	ptrdiff_t y;
 	for (y = 0; y != size; ++y) {
@@ -356,7 +431,7 @@ void rset_set(struct Rset *r, struct interval *array, ptrdiff_t size)
 	}
 }
 
-void rset_show(struct Rset *r)
+static void rset_show(struct Rset *r)
 {
 	int first = -2;
 	int last = -2;
@@ -443,7 +518,7 @@ void *rtree_lookup(struct Rtree *r, int ch)
 	return NULL;
 }
 
-void *rtree_lookup_unopt(struct Rtree *r, int ch)
+static void *rtree_lookup_unopt(struct Rtree *r, int ch)
 {
 	int a, b, c, d;
 	int idx;
@@ -534,7 +609,7 @@ static short rtree_alloc(struct Level *l, int levelno)
 	return (short)l->alloc++;
 }
 
-void rtree_add(struct Rtree *r, int ch, int che, void *map)
+static void rtree_add(struct Rtree *r, int ch, int che, void *map)
 {
 	int a = (TOPMASK & (ch >> TOPSHIFT));
 	int b = (SECONDMASK & (ch >> SECONDSHIFT));
@@ -749,7 +824,7 @@ void rtree_build(struct Rtree *r, struct interval_list *l)
 	}
 }
 
-void rtree_show(struct Rtree *r)
+static void rtree_show(struct Rtree *r)
 {
 	int first = -2;
 	int last = -2;
@@ -847,7 +922,7 @@ int rmap_lookup(struct Rtree *r, int ch, int dflt)
 	return dflt;
 }
 
-int rmap_lookup_unopt(struct Rtree *r, int ch, int dflt)
+static int rmap_lookup_unopt(struct Rtree *r, int ch, int dflt)
 {
 	int a, b, c, d;
 	int idx;
@@ -890,7 +965,7 @@ void rmap_init(struct Rtree *r)
 	r->leaf.table.e = (struct Ileaf *)joe_malloc(r->leaf.size * SIZEOF(struct Ileaf));
 }
 
-void rmap_clr(struct Rtree *r)
+static void rmap_clr(struct Rtree *r)
 {
 	joe_free(r->second.table.b);
 	joe_free(r->third.table.c);
@@ -1134,7 +1209,7 @@ void rmap_opt(struct Rtree *r)
 	}
 }
 
-void rmap_set(struct Rtree *r, struct interval *array, ptrdiff_t len, int map, int dflt)
+static void rmap_set(struct Rtree *r, struct interval *array, ptrdiff_t len, int map, int dflt)
 {
 	ptrdiff_t y;
 	for (y = 0; y != len; ++y) {
@@ -1142,7 +1217,7 @@ void rmap_set(struct Rtree *r, struct interval *array, ptrdiff_t len, int map, i
 	}
 }
 
-void rmap_show(struct Rtree *r)
+static void rmap_show(struct Rtree *r)
 {
 	int first = -2;
 	int last = -2;
@@ -1216,7 +1291,7 @@ void cclass_init(struct Cclass *m)
 	m->intervals = 0;
 }
 
-void cclass_clr(struct Cclass *m)
+static void cclass_clr(struct Cclass *m)
 {
 	if (m->intervals)
 		joe_free(m->intervals);
@@ -1324,7 +1399,7 @@ void cclass_merge(struct Cclass *m, struct interval *array, int len)
  * be sorted and consist of non-overlapping, non-adjacent ranges.
  */
 
-void cclass_sub(struct Cclass *m, int first, int last)
+static void cclass_sub(struct Cclass *m, int first, int last)
 {
 	int x;
 
@@ -1364,7 +1439,7 @@ void cclass_sub(struct Cclass *m, int first, int last)
 
 /* Remove any parts of m which also appear in n */
 
-void cclass_diff(struct Cclass *m, struct Cclass *n)
+static void cclass_diff(struct Cclass *m, struct Cclass *n)
 {
 	int x;
 	if (n)
@@ -1417,7 +1492,7 @@ void cclass_inv(struct Cclass *m)
 //	sleep(1);
 }
 
-int cclass_lookup_unopt(struct Cclass *m, int ch)
+static int cclass_lookup_unopt(struct Cclass *m, int ch)
 {
 	return interval_test(m->intervals, m->len, ch) != -1;
 }

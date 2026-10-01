@@ -41,7 +41,6 @@ extern int curlinmask;	/* Mask for the current line */
 
 void bwfllw(W *w);
 void bwfllwt(W *w);
-void bwfllwh(W *w);
 void bwins(BW *w, off_t l, off_t n, int flg);
 void bwdel(BW *w, off_t l, off_t n, int flg);
 void bwgen(BW *w, int linums, int linchg);

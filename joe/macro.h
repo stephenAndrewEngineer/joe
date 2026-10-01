@@ -39,20 +39,8 @@ extern struct recmac *recmac; /* Set when macro is recording: for status line */
  */
 MACRO *mkmacro(int k, int flg, ptrdiff_t n, CMD *cmd);
 
-/* Append step m to macro */
-void addmacro(MACRO *macro, MACRO *m);
-
-/* Recursively duplicate a macro */
-MACRO *dupmacro(MACRO *mac);
-
 /* Recursively delete a macro */
 void rmmacro(MACRO *macro);
-
-/* Set key part of macro step */
-MACRO *macstk(MACRO *m, int k);
-
-/* Set flag part of macro step */
-MACRO *macsta(MACRO *m, int a);
 
 /* Stuff Ctrl-C into previous step: used in nungetc() */
 void chmac(void);
@@ -67,9 +55,6 @@ void chmac(void);
      secure: if set, only allow commands which begin with "shell_"
 */
 MACRO *mparse(MACRO *m, const char *buf, ptrdiff_t *sta, int secure);
-
-/* Convert macro to text.  Provide a buffer to write to in 's'. */
-char *mtext(char *s, MACRO *m);
 
 /* Execute a macro */
 extern MACRO *curmacro; /* Current macro being executed */

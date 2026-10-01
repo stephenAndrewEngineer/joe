@@ -7,9 +7,6 @@
  */
 
 #define COLORSPEC_TYPE_NONE	0
-#define COLORSPEC_TYPE_ATTR	1
-#define COLORSPEC_TYPE_GUI	2
-#define COLORSET_GUI		0x1000000
 
 /* Color specification (either an attribute, or RGB colors */
 struct color_spec {
@@ -54,9 +51,7 @@ struct color_scheme {
 	struct color_set	*sets;
 };
 
-char **get_colors(void);
 SCHEME *load_scheme(const char *);
-int parse_color_spec(const char **, struct color_spec *);
 int parse_color_def(const char **, struct color_def *);
 int apply_scheme(SCHEME *);
 void resolve_syntax_colors(COLORSET *, struct high_syntax *);
@@ -66,6 +61,5 @@ void save_colors_state(FILE *);
 int init_colors(void);
 
 extern const char *scheme_name;
-extern struct color_scheme *curscheme;
 extern struct color_set *curschemeset;
 extern int bg_cursor;

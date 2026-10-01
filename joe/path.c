@@ -73,6 +73,21 @@
 #define PATH_MAX	4096
 #endif
 
+/* Moved here from the headers: used only in this file */
+
+/* int mkpath(char *path);
+ * Make sure path exists.  If it doesn't, try to create it
+ *
+ * Returns 1 for error or 0 for success.  The current directory
+ * and drive will be at the given path if successful, otherwise
+ * the drive and path will be elsewhere (not necessarily where they
+ * were before mkpath was called).
+ */
+static int mkpath(char *path);
+
+/* Change drive and directory */
+#define chddir chdir
+
 /********************************************************************/
 char *joesep(char *path)
 {
@@ -153,7 +168,7 @@ char *endprt(const char *path)
 	}
 }
 /********************************************************************/
-int mkpath(char *path)
+static int mkpath(char *path)
 {
 	char *s;
 

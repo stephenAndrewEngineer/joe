@@ -7,6 +7,21 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+/* Compute hash code for a string */
+static ptrdiff_t hash(const char *s);
+
+static const char *atom_noadd(const char *name);
+
+/* Compute hash code for a string */
+static ptrdiff_t zhash(const int *s);
+
+/* Delete a hash table.  HENTRIES get freed, but name/vals don't. */
+static void Zhtrm(ZHASH *ht);
+
+static const int *Zatom_noadd(const int *name);
+
 static HENTRY *freentry = NULL;
 
 /* Compute hash value of string (djb2) */
@@ -14,7 +29,7 @@ static HENTRY *freentry = NULL;
 #define hnext(accu, c) ((((accu) << 5) + (accu)) ^ (c))
 #define hinit 5381
 
-ptrdiff_t hash(const char *s)
+static ptrdiff_t hash(const char *s)
 {
 	ptrdiff_t accu = hinit;
 
@@ -136,7 +151,7 @@ const char *atom_add(const char *name)
 	return s;
 }
 
-const char *atom_noadd(const char *name)
+static const char *atom_noadd(const char *name)
 {
 	if (!atom_table)
 		atom_table = htmk(256);
@@ -145,7 +160,7 @@ const char *atom_noadd(const char *name)
 
 static ZHENTRY *zfreentry = NULL;
 
-ptrdiff_t zhash(const int *s)
+static ptrdiff_t zhash(const int *s)
 {
 	ptrdiff_t accu = hinit;
 
@@ -168,7 +183,7 @@ ZHASH *Zhtmk(ptrdiff_t len)
 
 /* Delete hash table.  Only the hash table is deleted, not the names and values */
 
-void Zhtrm(ZHASH *ht)
+static void Zhtrm(ZHASH *ht)
 {
 	ptrdiff_t x;
 	for (x = 0; x != ht->len; ++x) {
@@ -267,7 +282,7 @@ const int *Zatom_add(const int *name)
 	return s;
 }
 
-const int *Zatom_noadd(const int *name)
+static const int *Zatom_noadd(const int *name)
 {
 	if (!Zatom_table)
 		Zatom_table = Zhtmk(256);

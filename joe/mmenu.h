@@ -20,11 +20,6 @@ struct rc_menu {
 	MACRO *backs;		/* Macro to execute for backspace */
 };
 
-struct menu_instance {
-	struct rc_menu *menu;
-	char **s;
-};
-
 /* Create a menu */
 struct rc_menu *create_menu(char *name, MACRO *bs);
 

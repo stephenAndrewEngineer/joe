@@ -66,7 +66,6 @@ void *replenish(void **list,ptrdiff_t size);
 #define zstr(a, b) strstr((a), (b))
 #define zchr(s, c) strchr((s), (c))
 #define zrchr(s, c) strrchr((s), (c))
-#define zcat(a, b) strcat((a), (b))
 #define zdup(s) strdup(s)
 #define zcpy(a, b) strcpy((a), (b))
 #define zcmp(a, b) strcmp((a), (b))
@@ -104,23 +103,13 @@ char *zlcat(char *a, ptrdiff_t siz, const char *b);
 
 /* Functions which support zero-terminated strings of ints */
 
-ptrdiff_t Zlen(const int *s);
 int Zcmp(const int *a, const int *b);
-int *Zlcpy(int *a, ptrdiff_t siz, const int *b);
 int *Zdup(const int *s);
 char *Ztoutf8(char *a, ptrdiff_t len, const int *b);
 char *Ztoz(char *a, ptrdiff_t len, const int *b);
  
-/*
- * Functions which return minimum/maximum of two numbers  
- */
-unsigned int uns_min(unsigned int a, unsigned int b);
-signed int int_min(signed int a, int signed b);
-signed long long_max(signed long a, signed long b);
-signed long long_min(signed long a, signed long b);
 off_t off_max(off_t a, off_t b);
 off_t off_min(off_t a, off_t b);
-ptrdiff_t diff_max(ptrdiff_t a, ptrdiff_t b);
 ptrdiff_t diff_min(ptrdiff_t a, ptrdiff_t b);
 
 /* Versions of 'read' and 'write' which automatically retry when interrupted */
@@ -161,16 +150,10 @@ int parse_int(const char **p,int *buf);
 int parse_diff(const char **p,ptrdiff_t *buf);
 int parse_off_t(const char **p,off_t *buf);
 off_t ztoo(const char *s);
-off_t zhtoo(const char *s);
-long ztol(const char *s);
-long zhtol(const char *s);
-ptrdiff_t ztodiff(const char *s);
-ptrdiff_t zhtodiff(const char *s);
 int ztoi(const char *s);
 int zhtoi(const char *s);
 ptrdiff_t parse_string(const char **p,char *buf,ptrdiff_t len);
 ptrdiff_t parse_Zstring(const char **p,int *buf,ptrdiff_t len);
-int parse_range(const char **p,int *first,int *second);
 int parse_class(const char **p, struct interval **array, ptrdiff_t *size);
 void emit_string(FILE *f,const char *s,ptrdiff_t len);
 

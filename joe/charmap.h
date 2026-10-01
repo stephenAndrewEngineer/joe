@@ -74,11 +74,9 @@ char **get_encodings(void);
 
 /* Convert from Unicode to byte */
 int from_uni(struct charmap *cset, int c);
-int from_utf8(struct charmap *map,const char *s);
 
 /* Convert from byte to Unicode */
 int to_uni(struct charmap *cset, int c);
-void to_utf8(struct charmap *map,char *s,int c);
 
 void joe_locale();
 extern struct charmap *locale_map;	/* Character map of terminal */
@@ -86,7 +84,6 @@ extern struct charmap *utf8_map;	/* UTF-8 character map */
 extern struct charmap *utf16_map;	/* UTF-16 character map */
 extern struct charmap *utf16r_map;	/* UTF-16 reversed  character map */
 extern struct charmap *ascii_map;	/* Plain ASCII map */
-extern const char *locale_lang;	/* Locale language (like de_DE) */
 extern const char *locale_msgs;	/* Locale language for editor messages (like de_DE) */
 
 /* Guess map */

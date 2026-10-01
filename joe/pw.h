@@ -45,18 +45,11 @@ int ucmplt(W *w, int k);
 
 char **regsub(char **z, ptrdiff_t len, char *s);
 
-void cmplt_ins(BW *bw,char *line);
-
-int cmplt_abrt(W *w,ptrdiff_t x,void *obj);
-
-int cmplt_rtn(MENU *m,ptrdiff_t x,void *obj, int k);
-
 int simple_cmplt(BW *bw,char **list);
 int word_cmplt(BW *bw,char **list);
 
 void setup_history(B **history);
 void append_history(B *hist,char *s,ptrdiff_t len);
-void promote_history(B *hist, off_t line);
 void set_current_dir(BW *bw, char *s,int simp);
 
 extern int bg_prompt;

@@ -27,28 +27,7 @@ struct regmatch {
        nmatch is size of pmatch array
  */
 
-int pmatch(Regmatch_t *matches, int nmatch, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, int icase);
-
-#define MAX_MATCHES 10
-#define MAX_THREADS 50
-
 /* Instructions */
-
-enum {
-	/* Code >= 0: Match a single specific character */
-	iDOT = -512,	/* Match any single character */
-	iEXPR,	/* Match any single character, but skip entire expressions */
-	iBOL,	/* Match beginning of line */
-	iEOL,	/* Match end of line */
-	iBOW,	/* Match beginning of word */
-	iEOW,	/* Match end of word */
-	iBRA,	/* Opening parenthesis.  Parenthesis number follows. */
-	iKET,	/* Close parenthesis.  Parenthesis number follows. */
-	iFORK,	/* Alternate paths. */
-	iJUMP,	/* Jump, don't eat char. */
-	iCLASS,	/* Character class (address of struct range_map follows) */
-	iEND,	/* End of expression. */
-};
 
 /* A compiled regular expression */
 

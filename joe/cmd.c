@@ -7,6 +7,29 @@
  */
 #include "types.h"
 
+/* Moved here from the headers: used only in this file */
+
+#define EMID		  1	/* Recenter screen */
+
+#define ECHKXCOL	  2	/* Don't execute command if cursor column is wrong */
+
+#define EFIXXCOL	  4	/* Fix column position after command has executed */
+
+#define EPOS		 16	/* A position history command */
+
+#define EMOVE		 32	/* A movement for position history purposes */
+
+#define EKILL		 64	/* Function is a kill */
+
+#define EMOD		128	/* Not allowed on readonly files */
+
+/* These use same bits as TYPE* in types.h */
+#define EBLOCK		0x4000	/* Finish block selection (call udropon) */
+
+static int try_lock(BW *bw,B *b);
+
+static int uexecmd(W *w, int k);
+
 int joe_beep = 0;
 
 /* Command table */
@@ -17,7 +40,7 @@ static int ubeep(W *w, int k)
 	return 0;
 }
 
-CMD cmds[] = {
+static CMD cmds[] = {
 	{"abort", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uabort, NULL, 0, NULL},
 	{"abortbuf", TYPETW, uabortbuf, NULL, 0, NULL},
 	{"arg", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uarg, NULL, 0, NULL},
@@ -293,7 +316,7 @@ static int file_changed(W *w,int c,void *object,int *notify)
 
 /* Try to lock: start dialog if we can't.  Returns 0 if we couldn't lock */
 
-int try_lock(BW *bw,B *b)
+static int try_lock(BW *bw,B *b)
 {
 	/* First time we modify the file */
 	/* If we're a plain file, acquire lock */
@@ -590,7 +613,7 @@ static int docmd(W *w, char *s, void *object, int *notify)
 
 B *cmdhist = NULL;
 
-int uexecmd(W *w, int k)
+static int uexecmd(W *w, int k)
 {
 	if (wmkpw(w, joe_gettext(_("Command: ")), &cmdhist, docmd, "cmd", NULL, cmdcmplt, NULL, NULL, utf8_map, 0)) {
 		return 0;

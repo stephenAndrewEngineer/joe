@@ -28,7 +28,6 @@ struct undo {
 	UNDOREC	*last;		/* treated as a single undo record. */
 };
 
-extern int inundo; /* Set if inserts/deletes are part of an undo operation */
 extern int justkilled; /* Last edit was a delete, so store data in yank buffer */
 
 UNDO *undomk(B *b);

@@ -22,6 +22,21 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include <sys/time.h>
 #endif
 
+/* Moved here from the headers: used only in this file */
+
+/* maximum number of milliseconds that can elapse between
+   double/triple clicks */
+#define MOUSE_MULTI_THRESH	300
+
+/* mousedn(int x, int y, int middle) - handle a mouse-down event */
+static void mousedn(ptrdiff_t x, ptrdiff_t y, int middle);
+
+/* mouseup(int x, int y) - handle a mouse-up event */
+static void mouseup(ptrdiff_t x, ptrdiff_t y);
+
+/* mousedrag(int x, int y) - handle a mouse drag event */
+static void mousedrag(ptrdiff_t x, ptrdiff_t y);
+
 int auto_scroll = 0;		/* Set for autoscroll */
 ptrdiff_t auto_rate;		/* Rate */
 long auto_trig_time;		/* Time of next scroll */
@@ -143,7 +158,7 @@ long mnow()
 	return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
-void mousedn(ptrdiff_t x, ptrdiff_t y, int middle)
+static void mousedn(ptrdiff_t x, ptrdiff_t y, int middle)
 {
 	Cx = x, Cy = y;
 	if (middle) {
@@ -329,7 +344,7 @@ static void select_done(struct charmap *map)
 	}
 }
 
-void mouseup(ptrdiff_t x,ptrdiff_t y)
+static void mouseup(ptrdiff_t x,ptrdiff_t y)
 {
 	Cx = x, Cy = y;
 	switch(clicks) {
@@ -352,7 +367,7 @@ void mouseup(ptrdiff_t x,ptrdiff_t y)
 	last_msec = mnow();
 }
 
-void mousedrag(ptrdiff_t x,ptrdiff_t y)
+static void mousedrag(ptrdiff_t x,ptrdiff_t y)
 {
 	Cx = x, Cy = y;
 	switch(clicks) {
