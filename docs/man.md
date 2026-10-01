@@ -3542,8 +3542,10 @@ Complete word in text window
 <br>
 
 * codefinish<br>
-Code completion (Shift-Tab).  Passes the whole buffer and its file name
-to codeFinish() in joe/codefinish.c, which does nothing yet
+Code completion (Shift-Tab).  Passes the whole buffer, its file name and
+the cursor position to codeFinish() in joe/codefinish.c and inserts the
+text it returns at the cursor (currently an example that always inserts
+"I am completing code")
 <br>
 
 * insc<br>
