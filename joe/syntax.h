@@ -85,7 +85,6 @@ extern int *attr_buf;
 
 #define clear_state(s) (((s)->saved_s = 0), ((s)->state = 0), ((s)->stack = 0))
 #define invalidate_state(s) (((s)->state = -1), ((s)->saved_s = 0), ((s)->stack = 0))
-#define move_state(to,from) (*(to)= *(from))
 #define eq_state(x,y) ((x)->state == (y)->state && (x)->stack == (y)->stack && (x)->saved_s == (y)->saved_s)
 
 extern struct high_syntax *syntax_list;

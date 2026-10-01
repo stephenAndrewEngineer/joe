@@ -23,7 +23,6 @@ int ublkdel(W *w, int k);
 int upicokill(W *w, int k);
 int ublkmove(W *w, int k);
 int ublkcpy(W *w, int k);
-int dowrite(W *w, char *s, void *object, int *notify);
 int doinsf(W *w, char *s, void *object, int *notify);
 int urindent(W *w, int k);
 int ulindent(W *w, int k);

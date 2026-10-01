@@ -8,7 +8,6 @@
     4DB5;<CJK Ideograph Extension A, Last>;Lo;0;L;;;;;N;;;;;
 */
 
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -211,128 +210,6 @@ static int unifold_full(char *name)
 }
 
 /* Generate simple case folding table */
-
-static int unifold_simple(char *name)
-{
-    FILE *f;
-    char buf[1024];
-    unsigned in_low, in_high;
-    unsigned out_low, out_high;
-    int line = 0;
-    int first = 0;
-    f = fopen(name, "r");
-    if (!f) {
-        fprintf(stderr, "couldn't open %s\n", name);
-        return -1;
-    }
-    in_low = 0;
-    out_low = 0;
-
-    printf("\n");
-    printf("struct casefold tolower_table[] = {\n");
-
-    while (fgets(buf, sizeof(buf), f)) {
-        int x, y, c;
-        unsigned inval;
-        char flag;
-        unsigned outval[8];
-        int outval_ptr;
-        char *endp; 
-
-        ++line;
-
-        for (outval_ptr = 0; outval_ptr != 8; ++outval_ptr)
-            outval[outval_ptr] = 0;
-
-        TOFIRST;
-
-        /* Skip blank lines */
-        if (buf[x] == '\r' || buf[x] == '\n' || buf[x] == '#' || !buf[x])
-            continue;
-
-        /* Skip to end of field */
-        TOEND;
-
-        /* Input character */
-        inval = (unsigned int)strtol(buf + x, &endp, 16);
-        if (endp != buf + y || endp == buf + x) {
-            fprintf(stderr, "%s %d: invalid input character code\n", name, line);
-            return -1;
-        }
-
-        /* flag field */
-        TONEXT;
-        TOEND;
-        if (!buf[x] && buf[x + 1]) {
-            fprintf(stderr, "%s %d: bad flag character\n", name, line);
-            return -1;
-        }
-
-        flag = buf[x];
-        /* Ignore turkish special case and full folding */
-        if (flag == 'T' || flag == 'F')
-            continue;
-
-        /* Complain if we're not left with Simple or Common */
-        if (flag != 'S' && flag != 'C') {
-            fprintf(stderr,"%s %d: unknown flag", name, line);
-            return -1;
-        }
-
-        for (outval_ptr = 0; ;++outval_ptr) {
-            TONEXT;
-            TOEND;
-            if (!buf[x])
-                break;
-            outval[outval_ptr] = (unsigned int)strtol(buf + x, &endp, 16);
-            if (endp != buf + y || endp == buf + x) {
-                fprintf(stderr, "%s %d: invalid output character code\n", name, line);
-                return -1;
-            }
-        }
-        if (!outval_ptr || outval_ptr > 1) {
-            fprintf(stderr, "%s %d: invalid output string\n", name, line);
-            return -1;
-        }
-
-        if (outval_ptr == 1) {
-            /* Simple mapping */
-            if (in_low == 0) {
-                /* New */
-                in_low = in_high = inval;
-                out_low = out_high = outval[0];
-            } else if (in_high + 1 == inval && out_high + 1 == outval[0]) {
-                /* Extend */
-                in_high = inval;
-                out_high = outval[0];
-            } else {
-                /* Jump */
-                COMMA;
-                printf("	{ 0x%x, 0x%x, 0x%x, 0x0, 0x0 }", in_low, in_high, out_low);
-                in_low = in_high = inval;
-                out_low = out_high = outval[0];
-            }
-        } else {
-            /* Character to string mapping */
-            if (in_low != 0) {
-                COMMA;
-                printf("	{ 0x%x, 0x%x, 0x%x, 0x0, 0x0 }", in_low, in_high, out_low);
-                in_low = 0;
-            }
-            COMMA;
-            printf("	{ 0x%x, 0x%x, 0x%x, 0x%x, 0x%x }", inval, inval, outval[0], outval[1], outval[2] );
-        }
-    }
-    if (in_low != 0) {
-        COMMA;
-        printf("	{ 0x%x, 0x%x, 0x%x, 0x0, 0x0 }", in_low, in_high, out_low);
-    }
-    COMMA;
-    printf("	{ 0x0, 0x0, 0x0, 0x0, 0x0 }");
-    printf("\n};\n");
-    fclose(f);
-    return 0;
-}
 
 /* Loaded version of UnicodeData.txt file */
 

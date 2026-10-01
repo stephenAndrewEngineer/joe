@@ -705,17 +705,7 @@ SCRN *nopen(CAP *cap)
 		if (ansiish) {
 			t->assume_256 = 1;
 #ifndef TERMINFO
-#ifdef junk
-			t->ut = 1;
-			t->Sf = "\\E[38;5;%dm";
-			t->Sb = "\\E[48;5;%dm";
-#endif
 #else
-#ifdef junk
-			t->ut = 1;
-			t->Sf = "\033[38;5;%p1%dm";
-			t->Sb = "\033[48;5;%p1%dm";
-#endif
 #endif
 		}
 	}
@@ -1520,7 +1510,6 @@ static void outatri(SCRN *t, ptrdiff_t x, ptrdiff_t y, int c, int a)
 */
 	/* ++t->x; */
 }
-
 
 static void doinschr(SCRN *t, ptrdiff_t x, ptrdiff_t y, int (*s)[COMPOSE], int *as, ptrdiff_t n)
 {

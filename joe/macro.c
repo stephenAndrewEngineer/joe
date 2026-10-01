@@ -18,9 +18,6 @@ static MACRO *dupmacro(MACRO *mac);
 /* Set key part of macro step */
 static MACRO *macstk(MACRO *m, int k);
 
-/* Set flag part of macro step */
-static MACRO *macsta(MACRO *m, int a);
-
 /* Convert macro to text.  Provide a buffer to write to in 's'. */
 static char *mtext(char *s, MACRO *m);
 
@@ -109,12 +106,6 @@ static MACRO *macstk(MACRO *m, int k)
 }
 
 /* Set flg part of macro */
-
-static MACRO *macsta(MACRO *m, int a)
-{
-	m->flg = a;
-	return m;
-}
 
 /* Parse text into a macro
  * sta is set to:  ending position in buffer for no error.
@@ -809,7 +800,6 @@ int uendif(W *w, int k)
 	if(ifdepth==0) ifflag=1;
 	return 0;
 }
-
 
 int unaarg;
 int negarg;

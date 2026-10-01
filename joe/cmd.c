@@ -412,16 +412,6 @@ int execmd(CMD *cmd, int k)
 	/* Warning: bw is a BW * only if maint->curwin->watom->what &
 	    (TYPETW|TYPEPW) */
 
-#ifdef junk
-	/* Send data to shell window: this is broken ^K ^H (help) sends its ^H to shell */
-	if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && !bw->b->vt && piseof(bw->cursor) &&
-	(k==3 || k==9 || k==13 || k==8 || k==127 || k==4 || (cmd->func==utype /* && k>=32 && k<256 */))) {
-		char c = k;
-		joe_write(bw->b->out, &c, 1);
-		return 0;
-	}
-#endif
-
 	if (cmd->m)
 		return exmacro(cmd->m, 0, k);
 
@@ -593,18 +583,6 @@ static int docmd(W *w, char *s, void *object, int *notify)
 		ret = exmacro(mac, 1, NO_MORE_DATA);
 		rmmacro(mac);
 	}
-
-#ifdef junk
-	CMD *cmd = findcmd(s);
-	vsrm(s);	/* allocated in pw.c::rtnpw() */
-	if (!cmd)
-		msgnw(bw->parent,joe_gettext(_("No such command")));
-	else {
-		mac = mkmacro(-1, 0, 0, cmd);
-		ret = exmacro(mac, 1, NO_MORE_DATA);
-		rmmacro(mac);
-	}
-#endif
 
 	if (notify)
 		*notify = 1;

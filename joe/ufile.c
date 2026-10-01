@@ -76,7 +76,6 @@ static void genexmsgmulti(BW *bw, int saved, int skipped)
 	exmsg = vsncpy(NULL,0,sz(msgbuf));
 }
 
-
 /* Shell escape */
 
 int ushell(W *w, int k)
@@ -556,7 +555,6 @@ int ublksave(W *w, int k)
 		return usave(bw->parent, 0);
 	}
 }
-
 
 /* Load file to edit */
 
@@ -1211,45 +1209,6 @@ int ulose(W *w, int k)
 
 /* Buffer list */
 
-#ifdef junk
-
-static int dobuf(MENU *m, int x, char **s)
-{
-	char *name;
-	BW *bw = m->parent->win->object;
-	int *notify = m->parent->notify;
-
-	m->parent->notify = 0;
-	name = vsdup(s[x]);
-	wabort(m->parent);
-	return dorepl(bw, name, NULL, notify);
-}
-
-static int abrtb(MENU *m, int x, char **s)
-{
-	varm(s);
-	return -1;
-}
-
-int ubufed(W *w, int k)
-{
-	BW *bw;
-	char **s;
-	WIND_BW(bw, w);
-
-	s = getbufs();
-
-	vasort(av(s));
-	if (mkmenu(bw->parent, bw->parent, s, dobuf, abrtb, NULL, 0, s, NULL))
-		return 0;
-	else {
-		varm(s);
-		return -1;
-	}
-}
-
-#endif
-
 static int dobufed(W *w, char *s, void *object, int *notify)
 {
 /* not understanding this...
@@ -1271,7 +1230,6 @@ int ubufed(W *w, int k)
 		return -1;
 	}
 }
-
 
 /* Query save loop */
 

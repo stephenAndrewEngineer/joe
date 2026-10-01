@@ -18,7 +18,6 @@
 #include <limits.h>
 #endif
 
-
 #ifdef HAVE_DIRENT_H
 #  include <dirent.h>
 #  define NAMLEN(dirent) zlen((dirent)->d_name)
@@ -74,16 +73,6 @@
 #endif
 
 /* Moved here from the headers: used only in this file */
-
-/* int mkpath(char *path);
- * Make sure path exists.  If it doesn't, try to create it
- *
- * Returns 1 for error or 0 for success.  The current directory
- * and drive will be at the given path if successful, otherwise
- * the drive and path will be elsewhere (not necessarily where they
- * were before mkpath was called).
- */
-static int mkpath(char *path);
 
 /* Change drive and directory */
 #define chddir chdir
@@ -166,38 +155,6 @@ char *endprt(const char *path)
 			--z;
 		return vsncpy(NULL, 0, sz(z));
 	}
-}
-/********************************************************************/
-static int mkpath(char *path)
-{
-	char *s;
-
-	if (path[0] == '/') {
-		if (chddir("/"))
-			return 1;
-		s = path;
-		goto in;
-	}
-
-	while (path[0]) {
-		char c;
-
-		for (s = path; (*s) && (*s != '/'); s++) ;
-		c = *s;
-		*s = 0;
-		if (chddir(path)) {
-			if (mkdir(path, 0777))
-				return 1;
-			if (chddir(path))
-				return 1;
-		}
-		*s = c;
-	      in:
-		while (*s == '/')
-			++s;
-		path = s;
-	}
-	return 0;
 }
 /********************************************************************/
 /* Create a temporary file */
@@ -482,17 +439,6 @@ char *simplify_prefix(const char *s)
 {
 	const char *t = getenv("HOME");
 	char *n;
-
-#ifdef junk
-	char *org = pwd();
-	/* Normalize home */
-	if (t && !chpwd(t)) {
-		t = pwd();
-	} else {
-		t = 0;
-	}
-	chpwd(org);
-#endif
 
 	/* If current directory is prefixed with home directory, use ~... */
 	if (t && !zncmp(s,t,zlen(t)) && (!s[zlen(t)] || s[zlen(t)]=='/')) {

@@ -6,21 +6,11 @@
 
 static ptrdiff_t emitb_noalign(Frag *f, char c);
 
-static ptrdiff_t emitb(Frag *f, char c);
-
-static ptrdiff_t emith(Frag *f, short n);
-
-static ptrdiff_t emitd(Frag *f, double d);
-
-static ptrdiff_t emits(Frag *f, unsigned char *s, int len);
-
 #define fragh(f, ofst) (*(short *)((f)->start + (ofst)))
 
 #define fragi(f, ofst) (*(int *)((f)->start + (ofst)))
 
 #define fragp(f, ofst) (*(void **)((f)->start + (ofst)))
-
-static short fetchh(Frag *f, ptrdiff_t *pc);
 
 /* Initialize a fragment */
 
@@ -82,30 +72,7 @@ void align_frag(Frag *f,ptrdiff_t alignment)
 
 /* Emit a byte and align */
 
-static ptrdiff_t emitb(Frag *f, char c)
-{
-	ptrdiff_t ofst = emitb_noalign(f, c);
-	if (f->len & (f->align - 1))
-		align_frag(f, f->align);
-	return ofst;
-}
-
 /* Emit a short */
-
-static ptrdiff_t emith(Frag *f, short c)
-{
-	ptrdiff_t start;
-	if (f->len & (SIZEOF(short) - 1))
-		align_frag(f, SIZEOF(short));
-	if (f->len + SIZEOF(short) > f->size)
-		expand_frag(f, SIZEOF(short));
-	start = f->len;
-	*(short *)(f->start + f->len) = c;
-	f->len += SIZEOF(short);
-	if (f->len & (f->align - 1))
-		align_frag(f, f->align);
-	return start;
-}
 
 /* Emit an integer */
 
@@ -126,21 +93,6 @@ ptrdiff_t emiti(Frag *f, int c)
 
 /* Emit a double */
 
-static ptrdiff_t emitd(Frag *f, double d)
-{
-	ptrdiff_t start;
-	if (f->len & (SIZEOF(double) - 1))
-		align_frag(f, SIZEOF(double));
-	if (f->len + SIZEOF(double) > f->size)
-		expand_frag(f, SIZEOF(double));
-	start = f->len;
-	*(double *)(f->start + f->len) = d;
-	f->len += SIZEOF(double);
-	if (f->len & (f->align - 1))
-		align_frag(f, f->align);
-	return start;
-}
-
 /* Emit a pointer */
 
 ptrdiff_t emitp(Frag *f, void *p)
@@ -159,28 +111,6 @@ ptrdiff_t emitp(Frag *f, void *p)
 }
 
 /* Append a string to the code block */
-
-static ptrdiff_t emits(Frag *f, unsigned char *s, int len)
-{
-	ptrdiff_t start;
-
-	start = emiti(f, len);
-
-	if (f->len + len + 1 > f->size)
-		expand_frag(f, len + 1);
-
-	if (len)
-		mcpy(f->start + f->len, s, len);
-
-	f->start[f->len + len] = 0;
-
-	f->len += len + 1;
-
-	if (f->len & (f->align - 1))
-		align_frag(f, f->align);
-
-	return start;
-}
 
 ptrdiff_t emit_branch(Frag *f, ptrdiff_t target)
 {
@@ -207,19 +137,6 @@ void frag_link(Frag *f, ptrdiff_t chain)
 		fragi(f, chain) = (int)(ket - chain);
 		chain = next;
 	}
-}
-
-static short fetchh(Frag *f, ptrdiff_t *pcp)
-{
-	ptrdiff_t pc = *pcp;
-	short i;
-	pc += align_o(pc, SIZEOF(short));
-	i = fragh(f, pc);
-	pc += SIZEOF(short);
-	if (pc & (f->align - 1))
-		pc += align_o(pc, f->align);
-	*pcp = pc;
-	return i;
 }
 
 int fetchi(Frag *f, ptrdiff_t *pcp)

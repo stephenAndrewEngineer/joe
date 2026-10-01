@@ -207,9 +207,6 @@ int cpos(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y);
  */
 int set_attr(SCRN *t, int c);
 
-/* Encode character as utf8 */
-void utf8_putc(int c);
-
 /* void outatr(SCRN *t,int *scrn,int *attr,int x,int y,int c,int a);
  *
  * Output a character at the given screen coordinate.  The cursor position
@@ -258,8 +255,6 @@ extern unsigned atab[];
 #define BG_TRUECOLOR	(512<<BG_SHIFT)
 #define BG_MASK		(1023<<BG_SHIFT)
 
-#define BG_DEFAULT	(0<<BG_SHIFT)
-
 /* #define BG_COLOR(color)	(BG_NOT_DEFAULT^(color)<<BG_SHIFT) */
 #define BG_COLOR(color)	(color)
 
@@ -286,7 +281,6 @@ extern unsigned atab[];
 #define FG_TRUECOLOR	(512<<FG_SHIFT)
 #define FG_MASK		(1023<<FG_SHIFT)
 
-#define FG_DEFAULT	(0<<FG_SHIFT)
 #define FG_BWHITE	(FG_NOT_DEFAULT|(15<<FG_SHIFT))
 #define FG_BCYAN	(FG_NOT_DEFAULT|(14<<FG_SHIFT))
 #define FG_BMAGENTA	(FG_NOT_DEFAULT|(13<<FG_SHIFT))

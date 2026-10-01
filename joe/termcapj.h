@@ -148,16 +148,6 @@ ptrdiff_t tcost(CAP *cap, const char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1
 char *tcompile(CAP *cap, const char *s, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3);
 
 /* Old termcap support */
-#ifdef junk
-int tgetent();
-char *tgetstr();
-int tgetflag();
-int tgetnum();
-char *tgoto();
-void tputs();
-extern short ospeed;
-extern char PC, *UP, *BC;
-#endif
 
 extern int dopadding;
 extern char *joeterm;

@@ -90,17 +90,6 @@ static int cpara(BW *bw, int c)
 		}
 	}
 	return 0;
-#ifdef junk
-	if (c == ' ' || c == '\t' || c == '\\' ||
-	    c == '>' || c == '|' || c == ':' || c == '*' || c == '/' ||
-	    c == ',' || c == '.' || c == '?' || c == ';' || c == ']' ||
-	    c == '}' || c == '=' || c == '+' || c == '-' || c == '_' ||
-	    c == ')' || c == '&' || c == '^' || c == '%' || c == '$' ||
-	    c == '#' || c == '@' || c == '!' || c == '~')
-		return 1;
-	else
-		return 0;
-#endif
 }
 
 /* Return true if this first non-whitespace character means
@@ -432,7 +421,6 @@ void wrapword(BW *bw, P *p, off_t indent, int french, int no_over, char *indents
 		prm(q);
 		prm(s);
 	}
-
 
 /*
 	if(!indents) {

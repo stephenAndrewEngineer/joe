@@ -18,55 +18,9 @@
 
 static ptrdiff_t Zlen(const int *s);
 
-static int *Zlcpy(int *a, ptrdiff_t siz, const int *b);
-
-/*
- * Functions which return minimum/maximum of two numbers  
- */
-static unsigned int uns_min(unsigned int a, unsigned int b);
-
-static signed int int_min(signed int a, int signed b);
-
-static signed long long_max(signed long a, signed long b);
-
-static signed long long_min(signed long a, signed long b);
-
-static ptrdiff_t diff_max(ptrdiff_t a, ptrdiff_t b);
-
 static off_t zhtoo(const char *s);
 
-static long ztol(const char *s);
-
-static long zhtol(const char *s);
-
 static ptrdiff_t ztodiff(const char *s);
-
-static ptrdiff_t zhtodiff(const char *s);
-
-static int parse_range(const char **p,int *first,int *second);
-
-/*
- * return minimum/maximum of two numbers
- */
-static unsigned int uns_min(unsigned int a, unsigned int b)
-{
-	return a < b ? a : b;
-}
-
-static signed int int_min(signed int a, signed int b)
-{
-	return a < b ? a : b;
-}
-
-static signed long int long_max(signed long int a, signed long int b)
-{
-	return a > b ? a : b;
-}
-
-static signed long int long_min(signed long int a, signed long int b)
-{
-	return a < b ? a : b;
-}
 
 off_t off_max(off_t a, off_t b)
 {
@@ -76,11 +30,6 @@ off_t off_max(off_t a, off_t b)
 off_t off_min(off_t a, off_t b)
 {
 	return a < b ? a : b;
-}
-
-static ptrdiff_t diff_max(ptrdiff_t a, ptrdiff_t b)
-{
-	return a > b ? a : b;
 }
 
 ptrdiff_t diff_min(ptrdiff_t a, ptrdiff_t b)
@@ -330,7 +279,6 @@ int zncmp(const char *a, const char *b, ptrdiff_t len)
 	return strncmp(a, b, (size_t)len);
 }
 
-
 #if 0
 char *zdup(const char *bf)
 {
@@ -468,12 +416,6 @@ off_t ztoo(const char *s)
 		return val;
 }
 
-static long ztol(const char *s)
-{
-	off_t val = ztoo(s);
-	return (long)val;
-}
-
 int ztoi(const char *s)
 {
 	off_t val = ztoo(s);
@@ -486,22 +428,10 @@ static ptrdiff_t ztodiff(const char *s)
 	return (ptrdiff_t)val;
 }
 
-static long zhtol(const char *s)
-{
-	off_t val = zhtoo(s);
-	return (long)val;
-}
-
 int zhtoi(const char *s)
 {
 	off_t val = zhtoo(s);
 	return (int)val;
-}
-
-static ptrdiff_t zhtodiff(const char *s)
-{
-	off_t val = zhtoo(s);
-	return (ptrdiff_t)val;
 }
 
 /* Compare zero-terminated strings of ints */
@@ -521,22 +451,6 @@ int Zcmp(const int *a, const int *b)
 }
 
 /* Copy b into buffer a of length len.  A will always end up NUL terminated. */
-
-static int *Zlcpy(int *a, ptrdiff_t len, const int *b)
-{
-	int *org = a;
-	if (!len) {
-		fprintf(stderr, "Zlcpy called with len == 0\n");
-		exit(1);
-	}
-	--len;
-	while (len && *b) {
-		*a++ = *b++;
-		--len;
-	}
-	*a = 0;
-	return org;
-}
 
 /* Convert ints to chars */
 
@@ -900,25 +814,6 @@ ptrdiff_t parse_Zstring(const char **pp, int *buf, ptrdiff_t len)
 
 /* Emit a string with escape sequences */
 
-#ifdef junk
-
-/* Used originally for printing macros */
-
-void emit_string(FILE *f,const char *s,ptrdiff_t len)
-{
-	char buf[8];
-	char *p, *q;
-	fputc('\"',f);
-	while(len) {
-		p = unescape(buf,*s++);
-		for(q=buf;q!=p;++q)
-			fputc(*q,f);
-		--len;
-	}
-	fputc('\"',f);
-}
-#endif
-
 /* Emit a string */
 
 void emit_string(FILE *f,const char *s,ptrdiff_t len)
@@ -943,44 +838,6 @@ void emit_string(FILE *f,const char *s,ptrdiff_t len)
 
 /* Parse a character range: a-z */
 
-static int parse_range(const char * *pp, int *first, int *second)
-{
-	const char *p= *pp;
-	int a, b;
-	if(!*p)
-		return -1;
-	if(*p=='\\' && p[1]) {
-		++p;
-		if(*p=='n')
-			a = '\n';
-		else if(*p=='t')
-  			a = '\t';
-		else
-			a = *(const unsigned char *)p;
-		++p;
-	} else
-		a = *(const unsigned char *)p++;
-	if(*p=='-' && p[1]) {
-		++p;
-		if(*p=='\\' && p[1]) {
-			++p;
-			if(*p=='n')
-				b = '\n';
-			else if(*p=='t')
-				b = '\t';
-			else
-				b = *(const unsigned char *)p;
-			++p;
-		} else
-			b = *(const unsigned char *)p++;
-	} else
-		b = a;
-	*first = a;
-	*second = b;
-	*pp = p;
-	return 0;
-}
-
 int parse_class(const char * *pp, struct interval **array, ptrdiff_t *size)
 {
 	static struct interval simple;
@@ -1004,7 +861,6 @@ int parse_class(const char * *pp, struct interval **array, ptrdiff_t *size)
 		b = escape(1, &p, NULL, NULL);
 	} else
 		b = a;
-
 
 	if (b < a)
 		b = a;

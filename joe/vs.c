@@ -21,9 +21,6 @@
 /* int scmp(); */
 #define scmp(a, b) ((a) > (b) ? 1 : ((a) == (b) ? 0 : -1))
 
-/* Compare a single element- case insensitive */
-static int sicmp(char a, char b);
-
 /* A blank element */
 /* extern sELEMENT sblank; */
 #define sblank ' '
@@ -51,15 +48,6 @@ static ptrdiff_t vsbsearch(const sELEMENT *ary, ptrdiff_t len, sELEMENT el);
  * their beginning match.
  */
 static int vscmpn(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen);
-
-static int sicmp(char a, char b)
-{
-	if (a >= 'A' && a <= 'Z')
-		a = (char)(a + 'a' - 'A');
-	if (b >= 'A' && b <= 'Z')
-		b = (char)(b + 'a' - 'A');
-	return scmp(a, b);
-}
 
 sELEMENT *vsmk(ptrdiff_t len)
 {
@@ -189,47 +177,6 @@ sELEMENT *_vsset(sELEMENT *vary, ptrdiff_t pos, sELEMENT el)
 	return vary;
 }
 
-#ifdef junk
-
-sELEMENT *vsins(sELEMENT *vary, ptrdiff_t pos, ptrdiff_t n)
-{
-	if (!vary || sLEN(vary) + n > sSIZ(vary))
-		vary = vsensure(vary, sLEN(vary) + n);
-	if (pos >= sLen(vary))
-		vary = vstrunc(vary, pos + n);
-	else {
-		mmove(vary + pos + n, vary + pos, sLen(vary) - (pos + n) + 1);
-		sLen(vary) += n;
-	}
-	return vary;
-}
-
-sELEMENT *vsdel(sELEMENT *vary, ptrdiff_t pos, ptrdiff_t n)
-{
-	if (pos >= sLEN(vary))
-		return vary;
-	if (pos + n >= sLen(vary))
-		return vstrunc(vary, pos);
-	mmove(vary + pos, vary + pos + n, sLen(vary) - (pos + n) + 1);
-	sLen(vary) -= n;
-	return vary;
-}
-
-int _scmp(sELEMENT a, sELEMENT b)
-{
-	return scmp(a, b);
-}
-
-sELEMENT *vssort(sELEMENT *ary, ptrdiff_t len)
-{
-	if (!ary || !len)
-		return ary;
-	qsort(ary, len, SIZEOF(sELEMENT), _scmp);
-	return ary;
-}
-
-#endif
-
 static ptrdiff_t vsbsearch(const sELEMENT *ary, ptrdiff_t len, sELEMENT el)
 {
 	ptrdiff_t x, y, z;
@@ -254,36 +201,6 @@ static ptrdiff_t vsbsearch(const sELEMENT *ary, ptrdiff_t len, sELEMENT el)
 	}
 	return y;
 }
-
-#ifdef junk
-
-ptrdiff_t vsfirst(sELEMENT *ary, ptrdiff_t len, sELEMENT el)
-{
-	ptrdiff_t x;
-
-	if (!ary || !len)
-		return ~0;
-	for (x = 0; x != len; ++x)
-		if (!scmp(ary[x], el))
-			return x;
-	return ~0;
-}
-
-ptrdiff_t vslast(sELEMENT *ary, ptrdiff_t len, sELEMENT el)
-{
-	ptrdiff_t x = len;
-
-	if (!ary || !len)
-		return ~0;
-	do {
-		--x;
-		if (!scmp(ary[x], el))
-			return x;
-	} while (x);
-	return ~0;
-}
-
-#endif
 
 static int vscmpn(sELEMENT *a, ptrdiff_t myalen, sELEMENT *b, ptrdiff_t blen)
 {
@@ -314,51 +231,6 @@ int vscmp(sELEMENT *a, sELEMENT *b)
 {
 	return vscmpn(sv(a), sv(b));
 }
-#ifdef junk
-int vsicmpn(sELEMENT *a, ptrdiff_t myalen, sELEMENT *b, ptrdiff_t blen)
-{
-	ptrdiff_t x, l;
-	int t;
-
-	if (!a && !b)
-		return 0;
-	if (!a)
-		return -1;
-	if (!b)
-		return 1;
-	if (myalen > blen)
-		l = sLen(a);
-	else
-		l = blen;
-	for (x = 0; x != l; ++x)
-		if (t = sicmp(a[x], b[x]))
-			return t;
-	if (myalen > blen)
-		return 1;
-	if (myalen < blen)
-		return -1;
-	return 0;
-}
-
-ptrdiff_t vss(sELEMENT *a, ptrdiff_t myalen, sELEMENT *b, ptrdiff_t blen)
-{
-	ptrdiff_t x;
-
-	if (!a && !b)
-		return 0;
-	if (!a || !b)
-		return ~0;
-	if (myalen < blen)
-		return ~0;
-	if (!blen)
-		return 0;
-	for (x = 0; x != myalen - blen; ++x)
-		if (!vscmpn(a, blen, b, blen))
-			return x;
-	return ~0;
-}
-
-#endif
 
 ptrdiff_t vsscan(const sELEMENT *a, ptrdiff_t myalen, const sELEMENT *b, ptrdiff_t blen)
 {
@@ -386,45 +258,3 @@ ptrdiff_t vsspan(const sELEMENT *a, ptrdiff_t myalen, const sELEMENT *b, ptrdiff
 	return x;
 }
 
-#ifdef junk
-
-sELEMENT *vsread(sELEMENT d, ptrdiff_t p, int (*getC)(), void *ptr)
-{
-	int c;
-
-	if (!d)
-		d = vsmk(10);
-	c = getC(ptr);
-	if (c == NO_MORE_DATA) {
-		vsrm(d);
-		return NULL;
-	} else if (c == '\n')
-		return d;
-	else {
-		d = vsset(d, p, c);
-		p++;
-	}
-	while (c = getC(ptr), c != NO_MORE_DATA && c != '\n') {
-		d = vsset(d, p, c);
-		p++;
-	}
-	return d;
-}
-
-sELEMENT *vwords(sELEMENT *s, sELEMENT **a, ptrdiff_t len, sELEMENT t)
-{
-	ptrdiff_t x;
-
-	if (!s)
-		s = vsmk(32);
-	else
-		s = vstrunc(s, 0);
-	for (x = 0; x != len; ++x) {
-		s = vsncpy(s, sLEN(s), sz(a[x]));
-		if (a[1])
-			s = vsadd(s, t);
-	}
-	return s;
-}
-
-#endif

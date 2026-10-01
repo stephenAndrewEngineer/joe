@@ -43,11 +43,6 @@ ptrdiff_t emit_branch(Frag *f, ptrdiff_t target);
 void fixup_branch(Frag *f, ptrdiff_t pos);
 void frag_link(Frag *f, ptrdiff_t chain);
 
-/* Access data in a fragment */
-
-#define fragc(f, ofst) (*((f)->start + (ofst)))
-#define fragd(f, ofst) (*(double *)((f)->start + (ofst)))
-
 /* Fetch an datum from a fragment and advance the "PC" */
 
 int fetchi(Frag *f, ptrdiff_t *pc);

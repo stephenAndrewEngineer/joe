@@ -753,26 +753,6 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 
 /* Disassembler */
 
-static const char *iname(int c)
-{
-	if (c >= 0) return "CHAR";
-	else switch(c) {
-		case iEXPR: return "EXPR";
-		case iDOT: return "DOT";
-		case iBOL: return "BOL";
-		case iEOL: return "EOL";
-		case iBOW: return "BOW";
-		case iEOW: return "EOW";
-		case iBRA: return "BRA";
-		case iKET: return "KET";
-		case iFORK: return "FORK";
-		case iJUMP: return "JUMP";
-		case iCLASS: return "CLASS";
-		case iEND: return "END";
-		default: return "HUH?";
-	}
-}
-
 static void unasm(Frag *f)
 {
 	ptrdiff_t pc = 0;
@@ -1615,7 +1595,6 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int fo
 				break;
 			}
 		}
-
 
 		/* New becomes current */
 		cl = nl;

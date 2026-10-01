@@ -9,8 +9,6 @@
 
 /* Moved here from the headers: used only in this file */
 
-static char *find_longest(char **lst);
-
 int bg_menu;
 int bg_menusel = INVERSE;
 int bg_menumask = ~INVERSE;
@@ -693,19 +691,6 @@ static char *cull(char *a, char *b)
 
 	for (x = 0; a[x] && b[x] && a[x] == b[x]; ++x) ;
 	return vstrunc(a, x);
-}
-
-static char *find_longest(char **lst)
-{
-	char *com;
-	int x;
-
-	if (!lst || !aLEN(lst))
-		return vstrunc(NULL, 0);
-	com = vsncpy(NULL, 0, sv(lst[0]));
-	for (x = 1; x != aLEN(lst); ++x)
-		com = cull(com, lst[x]);
-	return com;
 }
 
 char *mcomplete(MENU *m)

@@ -77,16 +77,6 @@ aELEMENT *vatrunc(aELEMENT *vary, ptrdiff_t len);
 /* Function which write to an array */
 /************************************/
 
-#ifdef junk
-/* aELEMENT *vancpy(aELEMENT *vary, int pos, aELEMENT *array, int len);
- * Copy 'len' elements from 'array' onto 'vary' beginning at position 'pos'.
- * 'array' can be a normal char array since the length is passed separately.  The
- * elements are copied, not duplicated.  A new array is created if 'vary' is
- * 0.  This does not zap previous elements.
- */
-aELEMENT *vancpy(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len);
-#endif
-
 /* aELEMENT *vaset(aELEMENT *vary, int pos, aELEMENT element);
  * Set an element in an array.  Any value of 'pos' is valid.  A new array
  * is created if 'vary' is 0.  The previous contents of the position is
@@ -131,38 +121,6 @@ aELEMENT *_vaset(aELEMENT *vary, ptrdiff_t pos, aELEMENT el);
  * Return array,size pair.  Uses aLEN to get size.
  */
 #define av(a) (a), aLEN(a)
-
-/* { aELEMENT *, int } az(aELEMENT *array);
- * Return array,size pair.  Uses alen to get size.
- */
-#define az(a) (a), alen(a)
-
-/* { aELEMENT *, int } ac(aELEMENT *array);
- * Return array,size pair.  Uses 'sizeof' to get size.
- */
-#define ac(a) (a), (sizeof(a) / sizeof(aELEMENT))
-
-/* { aELEMENT *, int } arest(aELEMENT *vary, int pos);
- * Return array,size pair of rest of array beginning at pos.  If
- * pos is past end of array, gives size of 0.
- */
-#define arest(a, p) ((a) + (p)), (((p) > aLEN(a)) ? 0 : aLen(a) - (p))
-
-/* { aELEMENT *, int } apart(aELEMENT *vary, int pos, int len);
- * Return array,size pair of 'len' elements of array beginning with pos.  If
- * pos is past end of array, gives size of 0.  If pos+len is past end of array,
- * returns number of elements to end of array.
- */
-#define apart(a, p, l) \
- ((a) + (p)), ((p) >= aLEN(a) ? 0 : ((p) + (l) > aLen(a) ? aLen(a) - (p) : (l)))
-
-/* aELEMENT vaget(aELEMENT *vary, int pos);
- * Get an element from an array.  Any value of pos is valid; if it's past the
- * end of the array or if 'vary' is 0, the terminator is returned.  This
- * does not make a duplicate of the returned element.  If you want that, pass
- * the return value of this to adup.
- */
-#define vaget(a, p) ((p) >= aLEN(a) ? aterm : (a)[p])
 
 /*************************/
 /* Searching and Sorting */

@@ -32,10 +32,6 @@
 
 /* Moved here from the headers: used only in this file */
 
-static int from_utf8(struct charmap *map,const char *s);
-
-static void to_utf8(struct charmap *map,char *s,int c);
-
 /* nl_langinfo(CODESET) is broken on many systems.  If HAVE_SETLOCALE is undefined,
    JOE uses a limited internal version instead */
 
@@ -46,16 +42,6 @@ int to_uni(struct charmap *cset, int c)
 	if (c < 0)
 		c += 256;
 	return cset->to_map[c];
-}
-
-static void to_utf8(struct charmap *map,char *s,int c)
-{
-	int d = to_uni(map,c);
-
-	if (d==-1)
-		utf8_encode(s,'?');
-	else
-		utf8_encode(s,d);
 }
 
 /* Convert from Unicode to byte code.  Returns -1 for unknown. */
@@ -80,16 +66,6 @@ int from_uni(struct charmap *cset, int c)
 			return cset->from_map[z].last;
 	}
 	return -1;
-}
-
-static int from_utf8(struct charmap *map,const char *s)
-{
-	int d = utf8_decode_string(s);
-	int c = from_uni(map,d);
-	if (c==-1)
-		return '?';
-	else
-		return c;
 }
 
 /* Builtin maps */
@@ -1648,7 +1624,6 @@ void joe_locale()
 #else
 	non_utf8_codeset = joe_getcodeset(s);
 #endif
-
 
 	/* printf("joe_locale\n"); */
 #ifdef HAVE_SETLOCALE

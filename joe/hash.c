@@ -12,15 +12,8 @@
 /* Compute hash code for a string */
 static ptrdiff_t hash(const char *s);
 
-static const char *atom_noadd(const char *name);
-
 /* Compute hash code for a string */
 static ptrdiff_t zhash(const int *s);
-
-/* Delete a hash table.  HENTRIES get freed, but name/vals don't. */
-static void Zhtrm(ZHASH *ht);
-
-static const int *Zatom_noadd(const int *name);
 
 static HENTRY *freentry = NULL;
 
@@ -151,13 +144,6 @@ const char *atom_add(const char *name)
 	return s;
 }
 
-static const char *atom_noadd(const char *name)
-{
-	if (!atom_table)
-		atom_table = htmk(256);
-	return (char *)htfind(atom_table, name);
-}
-
 static ZHENTRY *zfreentry = NULL;
 
 static ptrdiff_t zhash(const int *s)
@@ -182,21 +168,6 @@ ZHASH *Zhtmk(ptrdiff_t len)
 }
 
 /* Delete hash table.  Only the hash table is deleted, not the names and values */
-
-static void Zhtrm(ZHASH *ht)
-{
-	ptrdiff_t x;
-	for (x = 0; x != ht->len; ++x) {
-		ZHENTRY *p, *n;
-		for (p = ht->tab[x]; p; p = n) {
-			n = p->next;
-			p->next = zfreentry;
-			zfreentry = p;
-		}
-	}
-	joe_free(ht->tab);
-	joe_free(ht);
-}
 
 /* Expand hash table */
 
@@ -280,12 +251,5 @@ const int *Zatom_add(const int *name)
 		Zhtadd(Zatom_table, s, s);
 	}
 	return s;
-}
-
-static const int *Zatom_noadd(const int *name)
-{
-	if (!Zatom_table)
-		Zatom_table = Zhtmk(256);
-	return (int *)Zhtfind(Zatom_table, name);
 }
 

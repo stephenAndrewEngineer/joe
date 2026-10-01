@@ -637,7 +637,6 @@ char ttgetc(void)
 	time_t new_time;
 	int flg;
 
-
 	tickon();
 
       loop:
@@ -899,11 +898,6 @@ void ttsusp(void)
 	ttclsn();
 	fputs(joe_gettext(_("You have suspended the program.  Type 'fg' to return\n")), stderr);
 	kill(0, SIGTSTP);
-#ifdef junk
-	/* Hmmm... this should not have been necessary */
-	if (ackkbd != -1)
-		kill(kbdpid, SIGCONT);
-#endif
 	if (omode)
 		ttopnn();
 	if (ackkbd!= -1)
@@ -1163,7 +1157,6 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 	/* Bump no. current async inputs to joe */
 	++nmpx;
 
-
 	/* Create processes... */
 	if (!(m->kpid = fork())) {
 		/* This process copies data from shell to joe */
@@ -1232,7 +1225,6 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 					enva = newenv(mainenv, "TERM=linux");
 				env = newenv(enva, "JOE=1");
 
-
 				if (!out_only) {
 #ifdef HAVE_LOGIN_TTY
 					login_tty(1);
@@ -1285,7 +1277,6 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 					}
 				}
 
-
 			}
 
 			_exit(0);
@@ -1298,7 +1289,6 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 
 		/* This process copies data from shell to JOE until EOF.  It creates a packet
 		   for each data */
-
 
 		/* We don't really get EOF from a pty- it would just wait forever
 		   until someone else writes to the tty.  So: when the shell

@@ -14,11 +14,6 @@
  */
 static KMAP *mkkmap(void);
 
-/* void rmkmap(KMAP *kmap);
- * Free a key map
- */
-static void rmkmap(KMAP *kmap);
-
 struct context *contexts; /* Global list of KMAPs */
 char **keymap_list; /* KMAP names array for completion */
 
@@ -140,24 +135,6 @@ static KMAP *mkkmap(void)
 }
 
 /* Eliminate a keymap */
-
-static void rmkmap(KMAP *kmap)
-{
-	struct interval_list *l, *n;
-	if (!kmap)
-		return;
-	for (l = kmap->src; l; l = n) {
-		n = l->next;
-		if (((KMAP *)l->map)->what == 1) {
-			rmkmap((KMAP *)l->map);
-		}
-		joe_free(l);
-	}
-	if (kmap->dflt && ((KMAP *)kmap->dflt)->what == 1)
-		rmkmap((KMAP *)kmap->dflt);
-	rtree_clr(&kmap->rtree);
-	joe_free(kmap);
-}
 
 /* Parse a range */
 

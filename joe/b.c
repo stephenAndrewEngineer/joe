@@ -27,18 +27,9 @@
 
 static P *ponline(P *p);
 
-static int pisbow(P *p);
-
-static int piseow(P *p);
-
-static int pispure(P *p,int c);
-
 static int pprev(P *p);
 
 static void pcoalesce(P *p);
-
-/* insert byte 'c' into buffer at at 'p' */
-static P *binsbyte(P *p, char c);
 
 static char *parsens(const char *s, off_t *skip, off_t *amnt);
 
@@ -121,7 +112,6 @@ static void grmem(H *hdr, char *ptr, short ofst, char *blk, short size)
 		mmove(blk, ptr + ofst + hdr->ehole - hdr->hole, size);
 }
 
-
 static H nhdrs = { {&nhdrs, &nhdrs} };
 static H ohdrs = { {&ohdrs, &ohdrs} };
 
@@ -151,7 +141,6 @@ static void hfreechn(H *h)
 {
 	splicef(H, link, &ohdrs, h);
 }
-
 
 static P frptrs = { {&frptrs, &frptrs} };
 
@@ -629,34 +618,6 @@ int pisbol(P *p)
 	return c == '\n';
 }
 
-/* is p at the beginning of word? */
-static int pisbow(P *p)
-{
-	P *q = pdup(p, "pisbow");
-	int c = brch(p);
-	int d = prgetc(q);
-
-	prm(q);
-	if (joe_isalnum_(p->b->o.charmap,c) && (!joe_isalnum_(p->b->o.charmap,d) || pisbof(p)))
-		return 1;
-	else
-		return 0;
-}
-
-/* is p at the end of word? */
-static int piseow(P *p)
-{
-	P *q = pdup(p, "piseow");
-	int d = brch(q);
-	int c = prgetc(q);
-
-	prm(q);
-	if (joe_isalnum_(p->b->o.charmap,c) && (!joe_isalnum_(p->b->o.charmap,d) || piseof(p)))
-		return 1;
-	else
-		return 0;
-}
-
 /* is p on the blank line (i.e. full of spaces/tabs)? */
 int pisblank(P *p)
 {
@@ -705,21 +666,6 @@ off_t pisindent(P *p)
 }
 
 /* return true if all characters to left of cursor match c */
-
-static int pispure(P *p,int c)
-{
-	P *q = pdup(p, "pispure");
-	if (c < 0)
-		c += 256;
-	p_goto_bol(q);
-	while (q->byte!=p->byte)
-		if (pgetc(q)!=c) {
-			prm(q);
-			return 0;
-                }
-	prm(q);
-	return 1;
-}
 
 int pnext(P *p)
 {
@@ -2277,15 +2223,6 @@ P *binsmq(P *p, const char *blk, ptrdiff_t amnt)
 	return p;
 }
 
-/* insert byte 'c' at 'p' */
-static P *binsbyte(P *p, char c)
-{
-	if (p->b->o.crlf && c == '\n')
-		return binsm(p, "\r\n", 2);
-	else
-		return binsm(p, &c, 1);
-}
-
 /* UTF-8 encode a character and insert it */
 P *binsc(P *p, int c)
 {
@@ -2492,7 +2429,6 @@ B *bread(int fi, off_t max)
 			goto rest;
 		}
 	}
-
 
 	while (seg = vlock(vmem, (l = halloc())->seg), !berror && (amnt = bkread(fi, seg, max >= SEGSIZ ? SEGSIZ : (ptrdiff_t) max))) {
 		rest:
@@ -2767,19 +2703,6 @@ B *bload(const char *s)
 	} else
 #endif
 	if (!zcmp(n, "-")) {
-#ifdef junk
-		FILE *f;
-		struct stat y;
-		fi = stdin;
-		/* Make sure stdin is not tty */
-		if (fstat(fileno(fi), &y)) 
-			goto no_stat;
-		if (y.st_mode & S_IFCHR) {
-			no_stat:
-			b = bmk(NULL);
-			goto empty;
-		}
-#endif
 		/* Now we always just create an empty buffer for "-" */
 		b = bmk(NULL);
 		goto empty;
@@ -3468,7 +3391,6 @@ skipfile:
 	}
 	_exit(1);
 }
-
 
 /* Create lock for a file
    Return 0 for success or -1 for failure

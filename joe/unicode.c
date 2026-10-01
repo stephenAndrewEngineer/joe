@@ -11,22 +11,6 @@
 
 /* Moved here from the headers: used only in this file */
 
-static int joe_iswupper(struct charmap *,int c);
-
-static int joe_iswlower(struct charmap *,int c);
-
-static int joe_iswalnum(struct charmap *,int c);
-
-static int joe_iswdigit(struct charmap *,int c);
-
-static int joe_iswctrl(struct charmap *,int c);
-
-static int joe_iswgraph(struct charmap *,int c);
-
-static int joe_iswxdigit(struct charmap *,int c);
-
-static int joe_iswblank(struct charmap *,int c);
-
 /* Convert UTF-32 string to lowercase for case folding */
 
 struct Rtree rtree_fold[1];
@@ -96,10 +80,8 @@ struct Cclass *unicode(const char *cat)
 /* iswxxx functions */
 
 static struct Cclass cclass_upper[1];
-static int joe_iswupper(struct charmap *foo, int ch) { return cclass_lookup(cclass_upper, ch); }
 
 static struct Cclass cclass_lower[1];
-static int joe_iswlower(struct charmap *foo, int ch) { return cclass_lookup(cclass_lower, ch); }
 
 static struct Cclass cclass_alpha[1];
 int joe_iswalpha(struct charmap *foo, int ch) { return cclass_lookup(cclass_alpha, ch); }
@@ -109,19 +91,16 @@ struct Cclass cclass_notalpha_[1];
 int joe_iswalpha_(struct charmap *foo, int ch) { return cclass_lookup(cclass_alpha_, ch); }
 
 static struct Cclass cclass_alnum[1];
-static int joe_iswalnum(struct charmap *foo, int ch) { return cclass_lookup(cclass_alnum, ch); }
 
 struct Cclass cclass_alnum_[1];
 struct Cclass cclass_notalnum_[1];
 int joe_iswalnum_(struct charmap *foo, int ch) { return cclass_lookup(cclass_alnum_, ch); }
 
 struct Cclass cclass_digit[1];
-static int joe_iswdigit(struct charmap *foo, int ch) { return cclass_lookup(cclass_digit, ch); }
 
 struct Cclass cclass_notdigit[1];
 
 static struct Cclass cclass_xdigit[1];
-static int joe_iswxdigit(struct charmap *foo, int ch) { return cclass_lookup(cclass_xdigit, ch); }
 
 static struct Cclass cclass_punct[1];
 int joe_iswpunct(struct charmap *foo, int ch) { return cclass_lookup(cclass_punct, ch); }
@@ -132,13 +111,10 @@ int joe_iswspace(struct charmap *foo, int ch) { return cclass_lookup(cclass_spac
 struct Cclass cclass_notspace[1];
 
 static struct Cclass cclass_blank[1];
-static int joe_iswblank(struct charmap *foo, int ch) { return cclass_lookup(cclass_blank, ch); }
 
 static struct Cclass cclass_ctrl[1];
-static int joe_iswctrl(struct charmap *foo, int ch) { return cclass_lookup(cclass_ctrl, ch); }
 
 static struct Cclass cclass_graph[1];
-static int joe_iswgraph(struct charmap *foo, int ch) { return cclass_lookup(cclass_graph, ch); }
 
 static struct Cclass cclass_print[1];
 int joe_iswprint(struct charmap *foo, int ch) { return cclass_lookup(cclass_print, ch); }
@@ -405,7 +381,6 @@ void joe_iswinit()
 		cclass_add(cclass_double, width_table[x].first, width_table[x].last);
 	cclass_opt(cclass_double);
 }
-
 
 /* Digit value of any \p{Nd} digit */
 /* Note that intervals in Nd table are not merged! */

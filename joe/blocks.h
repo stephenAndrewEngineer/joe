@@ -39,10 +39,3 @@ ptrdiff_t *msetD(ptrdiff_t *dest, ptrdiff_t c, ptrdiff_t sz);
  */
 ptrdiff_t mcnt(const char *blk, char c, ptrdiff_t size);
 
-#ifdef junk
-/* char *mchr(char *s,char c);
- *
- * Return address of first 'c' following 's'.
- */
-char *mchr(char *s, char c);
-#endif

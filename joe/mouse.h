@@ -16,16 +16,8 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
-#ifdef MOUSE_GPM
-int gpmopen();		/* initialize the connection. returns 0 on failure. */
-void gpmclose();	/* close the connection. */
-#endif
-
 void mouseopen();	/* initialize mouse */
 void mouseclose();	/* de-initialize mouse */
-
-/* mousednmiddle(BW *bw, int x, int y) - handle a mouse-middlebutton-down event */ 
-void mousednmiddle PARAMS((BW *bw, int x, int y));
 
 /* user command handlers */
 int uxtmouse(W *, int);		/* handle an xterm mouse control sequence */

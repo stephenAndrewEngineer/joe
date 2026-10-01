@@ -48,28 +48,6 @@ static aELEMENT *vazap(aELEMENT *vary, ptrdiff_t pos, ptrdiff_t n);
  */
 static aELEMENT *vafill(aELEMENT *vary, ptrdiff_t pos, aELEMENT el, ptrdiff_t len);
 
-/* aELEMENT *vandup(aELEMENT *vary, int pos, aELEMENT *array, int len);
- * Duplicate 'len' elements from 'array' onto 'vary' beginning at position
- * 'pos'.  'array' can be a char array since its length is passed separately.  A
- * new array is created if 'vary' is 0.
- */
-static aELEMENT *vandup(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len);
-
-/* aELEMENT *vadup(aELEMENT *vary);
- * Duplicate array.  This is just a functionalized version of:
- *
- *   vandup(NULL,0,vary,aLEN(vary));
- *
- * but since you need to be able to refer to this particular function by
- * address often it's given here.
- *
- * (actually, there's bazillions of these simple combinations of the above
- * functions and the macros of the next section.  You'll probably want to make
- * functionalized instances of the ones you use most often - especially since
- * the macros aren't safe).
- */
-static aELEMENT *vadup(aELEMENT *vary);
-
 /* Delete elements from an array */
 static void vadel(aELEMENT *ary, ptrdiff_t ofset, ptrdiff_t len);
 
@@ -162,46 +140,6 @@ static aELEMENT *vafill(aELEMENT *vary, ptrdiff_t pos, aELEMENT el, ptrdiff_t le
 	if (pos > olen)
 		vary = vafill(vary, pos, ablank, pos - olen);
 	return vary;
-}
-
-#ifdef junk
-aELEMENT *vancpy(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len)
-{
-	ptrdiff_t olen = aLEN(vary);
-
-	if (!vary || pos + len > aSIZ(vary))
-		vary = vaensure(vary, pos + len);
-	if (pos + len > olen) {
-		vary[pos + len] = vary[olen];
-		aLen(vary) = pos + len;
-	}
-	if (pos > olen)
-		vary = vafill(vary, olen, ablank, pos - olen);
-	mfwrd(vary + pos, array, len * SIZEOF(aELEMENT));
-	return vary;
-}
-#endif
-
-static aELEMENT *vandup(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len)
-{
-	ptrdiff_t olen = aLEN(vary), x;
-
-	if (!vary || pos + len > aSIZ(vary))
-		vary = vaensure(vary, pos + len);
-	if (pos + len > olen) {
-		vary[pos + len] = vary[olen];
-		aLen(vary) = pos + len;
-	}
-	if (pos > olen)
-		vary = vafill(vary, olen, ablank, pos - olen);
-	for (x = 0; x != len; ++x)
-		vary[x + pos] = adup(array[x]);
-	return vary;
-}
-
-static aELEMENT *vadup(aELEMENT *vary)
-{
-	return vandup(NULL, 0, vary, aLEN(vary));
 }
 
 aELEMENT *_vaset(aELEMENT *vary, ptrdiff_t pos, aELEMENT el)

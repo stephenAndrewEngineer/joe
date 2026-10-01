@@ -1648,14 +1648,6 @@ static int domath(W *w, char *s, void *object, int *notify, int secure)
 		return 0;
 	} else {
 		return 0;
-#ifdef junk
-		/* Stay at math prompt */
-		if (wmkpw(w, "=", &mathhist, doumath, "Math", NULL, NULL, NULL, NULL, utf8_map, 0)) {
-			return 0;
-		} else {
-			return -1;
-		}
-#endif
 	}
 }
 
@@ -1668,7 +1660,6 @@ static int dosmath(W *w, char *s, void *object, int *notify)
 {
 	return domath(w, s, object, notify, 1);
 }
-
 
 B *mathhist = NULL;
 

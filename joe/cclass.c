@@ -10,17 +10,9 @@
 
 /* Moved here from the headers: used only in this file */
 
-/* Sort an struct interval array */
-static void interval_sort(struct interval *array, ptrdiff_t size);
-
 static struct interval_list *mkinterval(struct interval_list *next, int first, int last, void *map);
 
 static void rminterval(struct interval_list *item);
-
-/* Add set of intervals (a character class) to an interval list */
-static struct interval_list *interval_set(struct interval_list *list, struct interval *array, int size, void *map);
-
-static void interval_show(struct interval_list *list);
 
 #define LEAFMASK 0xF
 
@@ -42,11 +34,7 @@ static void interval_show(struct interval_list *list);
 
 static void rset_init(struct Rset *r);
 
-static void rset_clr(struct Rset *r);
-
 static int rset_lookup(struct Rset *r, int ch);
-
-static int rset_lookup_unopt(struct Rset *r, int ch);
 
 static void rset_add(struct Rset *r, int ch, int che);
 
@@ -54,53 +42,9 @@ static void rset_opt(struct Rset *r);
 
 static void rset_set(struct Rset *r, struct interval *array, ptrdiff_t size);
 
-static void rset_show(struct Rset *r);
-
-static void *rtree_lookup_unopt(struct Rtree *r, int ch);
-
 static void rtree_add(struct Rtree *r, int ch, int che, void *map);
 
-static void rtree_show(struct Rtree *r);
-
-static void rmap_clr(struct Rtree *r);
-
-static int rmap_lookup_unopt(struct Rtree *r, int ch, int dflt);
-
-static void rmap_set(struct Rtree *r, struct interval *array, ptrdiff_t len, int map, int dflt);
-
-static void rmap_show(struct Rtree *r);
-
-/* Free memory used by a Cclass (does not free cclass itself) */
-static void cclass_clr(struct Cclass *cclass);
-
-/* Remove a range to a character class */
-static void cclass_sub(struct Cclass *cclass, int first, int last);
-
-/* Subtract one character class from another */
-static void cclass_diff(struct Cclass *cclass, struct Cclass *n);
-
-/* Lookup a character in a character class using binary search.
-   Return true if character is in the class. */
-static int cclass_lookup_unopt(struct Cclass *m, int ch);
-
 /* Sort an array of struct intervals */
-
-static int itest(const void *ia, const void *ib)
-{
-	const struct interval *a = (const struct interval *)ia;
-	const struct interval *b = (const struct interval *)ib;
-	if (a->first > b->first)
-		return 1;
-	else if (a->first < b->first)
-		return -1;
-	else
-		return 0;
-}
-
-static void interval_sort(struct interval *array, ptrdiff_t num)
-{
-	jsort(array, num, SIZEOF(struct interval), itest);
-}
 
 /* Test if character ch is in one of the struct intervals in array using binary search.
  * Returns index to interval, or -1 if none found. */
@@ -219,14 +163,6 @@ struct interval_list *interval_add(struct interval_list *interval_list, int firs
 
 /* Add a list of intervals (typically representing a character class) to an interval list */
 
-static struct interval_list *interval_set(struct interval_list *interval_list, struct interval *list, int size, void *map)
-{
-	int x;
-	for (x = 0; x != size; ++x)
-		interval_list = interval_add(interval_list, list[x].first, list[x].last, map);
-	return interval_list;
-}
-
 void *interval_lookup(struct interval_list *list, void *dflt, int item)
 {
 	if (item < 0)
@@ -237,15 +173,6 @@ void *interval_lookup(struct interval_list *list, void *dflt, int item)
 		list = list->next;
 	}
 	return dflt;
-}
-
-static void interval_show(struct interval_list *list)
-{
-	logmessage_1("Interval list at %p\n", list);
-	while (list) {
-		logmessage_4("%p show %x..%x -> %p\n", list, list->interval.first, list->interval.last, list->map);
-		list = list -> next;
-	}
 }
 
 /* Return true if character ch is in radix tree r */
@@ -283,29 +210,6 @@ static int rset_lookup(struct Rset *r, int ch)
 
 /* Same as above, but can be be called before rset_opt() */
 
-static int rset_lookup_unopt(struct Rset *r, int ch)
-{
-	int a, b, c, d;
-	int idx;
-	if (ch < 0)
-		ch += 256;
-	a = (ch >> TOPSHIFT);
-	b = (SECONDMASK & (ch >> SECONDSHIFT));
-	c = (THIRDMASK & (ch >> THIRDSHIFT));
-	d = (LEAFMASK & (ch >> LEAFSHIFT));
-	if (a >= TOPSIZE)
-		return 0;
-	idx = r->top.entry[a];
-	if (idx != -1) {
-		idx = r->second.table.b[idx].entry[b];
-		if (idx != -1) {
-			idx = r->third.table.c[idx].entry[c];
-			return ((1 << d) & idx) != 0;
-		}
-	}
-	return 0;
-}
-
 static void rset_init(struct Rset *r)
 {
 	int x;
@@ -319,12 +223,6 @@ static void rset_init(struct Rset *r)
 	r->third.alloc = 0;
 	r->third.size = 1;
 	r->third.table.c = (struct Mid *)joe_malloc(r->third.size * SIZEOF(struct Mid));
-}
-
-static void rset_clr(struct Rset *r)
-{
-	joe_free(r->second.table.b);
-	joe_free(r->third.table.c);
 }
 
 static short rset_alloc(struct Level *l, int levelno)
@@ -431,62 +329,6 @@ static void rset_set(struct Rset *r, struct interval *array, ptrdiff_t size)
 	}
 }
 
-static void rset_show(struct Rset *r)
-{
-	int first = -2;
-	int last = -2;
-	int a;
-	ptrdiff_t len = 0;
-	ptrdiff_t total = 0;
-	logmessage_1("Rset at %p\n", r);
-
-	len = SIZEOF(struct Rset);
-	logmessage_1("Top level size = %lld\n", (long long)len);
-	total += len;
-
-	len = r->second.alloc * SIZEOF(struct Mid);
-	logmessage_2("Second level size = %lld (%d entries)\n", (long long)len, r->second.alloc);
-	total += len;
-
-	len = r->third.alloc * SIZEOF(struct Mid);
-	logmessage_2("Third level size = %lld (%d entries)\n", (long long)len, r->third.alloc);
-	total += len;
-
-	logmessage_1("Total size = %lld bytes\n", (long long)total);
-
-	for (a = 0; a != TOPSIZE; ++a) {
-		int ib = r->top.entry[a];
-		if (ib != -1) {
-			int b;
-			for (b = 0; b != SECONDSIZE; ++b) {
-				int ic = r->second.table.b[ib].entry[b];
-				if (ic != -1) {
-					int c;
-					for (c = 0; c != THIRDSIZE; ++c) {
-						int id = r->third.table.c[ic].entry[c];
-						int d;
-						for (d = 0; d != LEAFSIZE; ++d) {
-							if (id & (1 << d)) {
-								int ch = (a << TOPSHIFT) + (b << SECONDSHIFT) + (c << THIRDSHIFT) + d;
-								if (ch == last + 1) {
-									last = ch;
-								} else if (first != -2) {
-									logmessage_2("	{ 0x%4.4X, 0x%4.4X },\n", first, last);
-									first = last = ch;
-								} else {
-									first = last = ch;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	if (first != -2)
-		logmessage_2("	{ 0x%4.4X, 0x%4.4X },\n", first, last);
-}
-
 /* Radix tree maps */
 
 void *rtree_lookup(struct Rtree *r, int ch)
@@ -514,30 +356,6 @@ void *rtree_lookup(struct Rtree *r, int ch)
 		int idx = r->mid.entry[c];
 		if (idx != -1)
 			return r->leaf.table.d[idx].entry[d];
-	}
-	return NULL;
-}
-
-static void *rtree_lookup_unopt(struct Rtree *r, int ch)
-{
-	int a, b, c, d;
-	int idx;
-	if (ch < 0)
-		ch += 256;
-	a = (ch >> TOPSHIFT);
-	b = (SECONDMASK & (ch >> SECONDSHIFT));
-	c = (THIRDMASK & (ch >> THIRDSHIFT));
-	d = (LEAFMASK & (ch >> LEAFSHIFT));
-	if (a >= TOPSIZE)
-		return NULL;
-	idx = r->top.entry[a];
-	if (idx != -1) {
-		idx = r->second.table.b[idx].entry[b];
-		if (idx != -1) {
-			idx = r->third.table.c[idx].entry[c];
-			if (idx != -1)
-				return r->leaf.table.d[idx].entry[d];
-		}
 	}
 	return NULL;
 }
@@ -824,73 +642,6 @@ void rtree_build(struct Rtree *r, struct interval_list *l)
 	}
 }
 
-static void rtree_show(struct Rtree *r)
-{
-	int first = -2;
-	int last = -2;
-	void *val = 0;
-	int a;
-
-	ptrdiff_t len = 0;
-	ptrdiff_t total = 0;
-	logmessage_1("Rtree at %p\n", r);
-
-	len = SIZEOF(struct Rtree);
-	logmessage_1("Top level size = %lld\n", (long long)len);
-	total += len;
-
-	len = r->second.alloc * SIZEOF(struct Mid);
-	logmessage_2("Second level size = %lld (%d entries)\n", (long long)len, r->second.alloc);
-	total += len;
-
-	len = r->third.alloc * SIZEOF(struct Mid);
-	logmessage_2("Third level size = %lld (%d entries)\n", (long long)len, r->third.alloc);
-	total += len;
-
-	len = r->leaf.alloc * SIZEOF(struct Leaf);
-	logmessage_2("Fourth level size = %lld (%d entries)\n", (long long)len, r->leaf.alloc);
-	total += len;
-
-	logmessage_1("Total size = %lld bytes\n", (long long)total);
-	
-	for (a = 0; a != TOPSIZE; ++a) {
-		int ib = r->top.entry[a];
-		if (ib != -1) {
-			int b;
-			for (b = 0; b != SECONDSIZE; ++b) {
-				int ic = r->second.table.b[ib].entry[b];
-				if (ic != -1) {
-					int c;
-					for (c = 0; c != THIRDSIZE; ++c) {
-						int id = r->third.table.c[ic].entry[c];
-						if (id != -1) {
-							int d;
-							for (d = 0; d != LEAFSIZE; ++d) {
-								void *ie = r->leaf.table.d[id].entry[d];
-								int ch = (a << TOPSHIFT) + (b << SECONDSHIFT) + (c << THIRDSHIFT) + d;
-								/* if (ie)
-									printf("%d %d.%d %d.%d %d: %d=%p\n",a,ib,b,ic,c,id,d,ie); */
-								if (ch == last + 1 && ie == val) {
-									last = ch;
-								} else if (first != -2) {
-									logmessage_4("%p show %x %x %p\n", r, first, last, val);
-									first = last = ch;
-									val = ie;
-								} else {
-									first = last = ch;
-									val = ie;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	if (first != -2)
-		logmessage_4("%p show %x %x %p\n", r, first, last, val);
-}
-
 /* Radix tree maps */
 
 int rmap_lookup(struct Rtree *r, int ch, int dflt)
@@ -922,30 +673,6 @@ int rmap_lookup(struct Rtree *r, int ch, int dflt)
 	return dflt;
 }
 
-static int rmap_lookup_unopt(struct Rtree *r, int ch, int dflt)
-{
-	int a, b, c, d;
-	int idx;
-	if (ch < 0)
-		ch += 256;
-	a = (ch >> TOPSHIFT);
-	b = (SECONDMASK & (ch >> SECONDSHIFT));
-	c = (THIRDMASK & (ch >> THIRDSHIFT));
-	d = (LEAFMASK & (ch >> LEAFSHIFT));
-	if (a >= TOPSIZE)
-		return dflt;
-	idx = r->top.entry[a];
-	if (idx != -1) {
-		idx = r->second.table.b[idx].entry[b];
-		if (idx != -1) {
-			idx = r->third.table.c[idx].entry[c];
-			if (idx != -1)
-				return r->leaf.table.e[idx].entry[d];
-		}
-	}
-	return dflt;
-}
-
 void rmap_init(struct Rtree *r)
 {
 	int x;
@@ -963,13 +690,6 @@ void rmap_init(struct Rtree *r)
 	r->leaf.alloc = 0;
 	r->leaf.size = 1;
 	r->leaf.table.e = (struct Ileaf *)joe_malloc(r->leaf.size * SIZEOF(struct Ileaf));
-}
-
-static void rmap_clr(struct Rtree *r)
-{
-	joe_free(r->second.table.b);
-	joe_free(r->third.table.c);
-	joe_free(r->leaf.table.e);
 }
 
 static short rmap_alloc(struct Level *l, int levelno, int dflt)
@@ -1209,92 +929,10 @@ void rmap_opt(struct Rtree *r)
 	}
 }
 
-static void rmap_set(struct Rtree *r, struct interval *array, ptrdiff_t len, int map, int dflt)
-{
-	ptrdiff_t y;
-	for (y = 0; y != len; ++y) {
-		rmap_add(r, array[y].first, array[y].last, map, dflt);
-	}
-}
-
-static void rmap_show(struct Rtree *r)
-{
-	int first = -2;
-	int last = -2;
-	int val = 0;
-	int a;
-
-	ptrdiff_t len = 0;
-	ptrdiff_t total = 0;
-	logmessage_1("Rmap at %p\n", r);
-
-	len = SIZEOF(struct Rtree);
-	logmessage_1("Top level size = %lld\n", (long long)len);
-	total += len;
-
-	len = r->second.alloc * SIZEOF(struct Mid);
-	logmessage_2("Second level size = %lld (%d entries)\n", (long long)len, r->second.alloc);
-	total += len;
-
-	len = r->third.alloc * SIZEOF(struct Mid);
-	logmessage_2("Third level size = %lld (%d entries)\n", (long long)len, r->third.alloc);
-	total += len;
-
-	len = r->leaf.alloc * SIZEOF(struct Ileaf);
-	logmessage_2("Fourth level size = %lld (%d entries)\n", (long long)len, r->leaf.alloc);
-	total += len;
-
-	logmessage_1("Total size = %lld bytes\n", (long long)total);
-	
-	for (a = 0; a != TOPSIZE; ++a) {
-		int ib = r->top.entry[a];
-		if (ib != -1) {
-			int b;
-			for (b = 0; b != SECONDSIZE; ++b) {
-				int ic = r->second.table.b[ib].entry[b];
-				if (ic != -1) {
-					int c;
-					for (c = 0; c != THIRDSIZE; ++c) {
-						int id = r->third.table.c[ic].entry[c];
-						if (id != -1) {
-							int d;
-							for (d = 0; d != LEAFSIZE; ++d) {
-								int ie = r->leaf.table.e[id].entry[d];
-								int ch = (a << TOPSHIFT) + (b << SECONDSHIFT) + (c << THIRDSHIFT) + d;
-								if (ch == last + 1 && ie == val) {
-									last = ch;
-								} else if (first != -2) {
-									logmessage_4("%p show %x %x -> %d\n", r, first, last, val);
-									first = last = ch;
-									val = ie;
-								} else {
-									first = last = ch;
-									val = ie;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	if (first != -2)
-		logmessage_4("%p show %x %x -> %d\n", r, first, last, val);
-}
-
 /* Character classes */
 
 void cclass_init(struct Cclass *m)
 {
-	m->size = 0;
-	m->len = 0;
-	m->intervals = 0;
-}
-
-static void cclass_clr(struct Cclass *m)
-{
-	if (m->intervals)
-		joe_free(m->intervals);
 	m->size = 0;
 	m->len = 0;
 	m->intervals = 0;
@@ -1399,53 +1037,7 @@ void cclass_merge(struct Cclass *m, struct interval *array, int len)
  * be sorted and consist of non-overlapping, non-adjacent ranges.
  */
 
-static void cclass_sub(struct Cclass *m, int first, int last)
-{
-	int x;
-
-	/* If it's invalid, ignore */
-	if (last < first)
-		return;
-
-	for (x = 0; x != m->len; ++x) {
-		if (first > m->intervals[x].last) {
-			/* intervals[x] is below range, skip it. */
-		} else if (m->intervals[x].first > last) {
-			/* intervals[x] is fully above new range, we're done */
-			break;
-		} else if (first <= m->intervals[x].first) {
-			if (last >= m->intervals[x].last) { /* && first <= m->intervals[x].first */
-				/* Range fully covers entry, delete it */
-				cclass_del(m, x);
-				--x;
-			} else { /* last < m->intervals[x].last && first <= m->intervals[x].first */
-				/* Range cuts off bottom of entry */
-				m->intervals[x].first = last + 1;
-			}
-		} else { /* first > m->intervals[x].first */
-			if (last >= m->intervals[x].last) { /* && first > m->intervals[x].first */
-				/* Range cuts off top of entry */
-				m->intervals[x].last = first - 1;
-			} else { /* last < m->intervals[x].last && first > m->intervals[x].first */
-				/* Range is in middle of entry, split it */
-				cclass_ins(m, x, m->intervals[x].first, first - 1);
-				m->intervals[x + 1].first = last + 1;
-				++x;
-			}
-			
-		}
-	}
-}
-
 /* Remove any parts of m which also appear in n */
-
-static void cclass_diff(struct Cclass *m, struct Cclass *n)
-{
-	int x;
-	if (n)
-		for (x = 0; x != n->len; ++x)
-			cclass_sub(m, n->intervals[x].first, n->intervals[x].last);
-}
 
 /* Compute inverse of class m */
 
@@ -1490,11 +1082,6 @@ void cclass_inv(struct Cclass *m)
 //	printf("\r\nAfter:\n");
 //	cclass_show(m);
 //	sleep(1);
-}
-
-static int cclass_lookup_unopt(struct Cclass *m, int ch)
-{
-	return interval_test(m->intervals, m->len, ch) != -1;
 }
 
 void cclass_opt(struct Cclass *m)

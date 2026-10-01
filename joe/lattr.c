@@ -40,8 +40,6 @@ static struct lattr_db *mk_lattr_db(B *new_b, struct high_syntax *new_syn);
 
 static void rm_lattr_db(struct lattr_db *db);
 
-static void drop_lattr_db(B *b, struct lattr_db *db);
-
 #define lattr_size(db) ((db)->end - ((db)->ehole - (db)->hole))
 
 static void lattr_hole(struct lattr_db *db, ptrdiff_t pos);
@@ -146,22 +144,6 @@ struct lattr_db *find_lattr_db(B *b, struct high_syntax *y)
 }
 
 /* Drop a database, but only if no BWs refer to it */
-
-static void drop_lattr_db(B *b, struct lattr_db *db)
-{
-#ifdef junk
-	if (!lattr_db_in_use(db)) {
-		if (b->db == db) {
-			b->db = db->next;
-		} else {
-			struct lattr_db *x;
-			for (x = b->db; x->next != db; x = x->next);
-			x->next = db->next;
-		}
-		rm_lattr_db(db);
-	}
-#endif
-}
 
 /* An insert occurred */
 
@@ -354,26 +336,6 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, ptrd
 	}
 
 	/* Check it */
-
-#ifdef junk
-	{
-		HIGHLIGHT_STATE st;
-		P *tmp =pdup(p, "lattr_get");
-		pline(tmp, 0);
-		clear_state(&st);
-
-		for (z = 0; z != db->first_invalid; ++z) {
-			HIGHLIGHT_STATE *prev;
-			prev = lattr_gt(db, z);
-			if (prev->state != st.state) {
-				printf("** Mismatch!! %d %d %d %d **\n",z,tmp->line,prev->state,st.state);
-				abort();
-			}
-			st = parse(y, tmp, st, p->b->o.charmap);
-		}
-		prm(tmp);
-	}
-#endif
 
 	/* Return with attribute */
 	return lattr_lvalue(db, line);

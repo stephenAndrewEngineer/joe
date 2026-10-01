@@ -8,55 +8,6 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-/* Destructors */
-
-#define AUTO_DESTRUCT GC *gc = 0;
-
-typedef struct gc GC;
-
-struct gc {
-	struct gc *next;	/* List */
-	void **var;		/* Address of pointer variable */
-	void (*rm)(void *val);	/* Destructor which takes pointer variable */
-};
-
-/* Add a variable to GC list */
-
-void gc_add(GC **gc, void **var, void (*rm)(void *val));
-
-/* Call destructors */
-
-void gc_collect(GC **gc);
-
-/* Version of return which calls destructors before returning */
-
-#define RETURN(val) do { \
-	if (gc) gc_collect(&gc); \
-	return (val); \
-	} while(0)
-
-/* Pool allocation functions using singly-linked lists */
-
-extern void *ITEM; /* Temporary global variable (from queue.c) */
-
-/* Allocate item from free-list.  If free-list empty, replenish it. */
-
-void *replenish(void **list,ptrdiff_t size);
-
-#define al_single(list,type) ( \
-	(ITEM = *(void **)(list)) ? \
-	  ( (*(void **)(list) = *(void **)ITEM), ITEM ) \
-	: \
-	  replenish((void **)(list),sizeof(type)) \
-)
-
-/* Put item on free list */
-
-#define fr_single(list,item) do { \
-	*(void **)(item) = *(void **)(list); \
-	*(void **)(list) = (void *)(item); \
-} while(0)
-
 /* JOE's version of zero-terminated string (z-string) functions.
    In older versions of JOE we had these because the library versions were slow. 
    In older versions of JOE we had these because we globally used "unsigned char *" strings.
@@ -119,7 +70,6 @@ int joe_ioctl(int fd, unsigned long req, void *ptr);
 
 /* wrappers to *alloc routines */
 void *joe_malloc(ptrdiff_t size);
-char *joe_strdup(char *ptr);
 void *joe_calloc(ptrdiff_t nmemb, ptrdiff_t size);
 void *joe_realloc(void *ptr, ptrdiff_t size);
 void joe_free(void *ptr);

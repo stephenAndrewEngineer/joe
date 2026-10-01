@@ -263,73 +263,9 @@ sELEMENT *_vsset(sELEMENT *vary, ptrdiff_t pos, sELEMENT el);
  */
 #define sc(a) (a), (sizeof(a) / sizeof(sELEMENT) - 1)
 
-/* { sELEMENT *, int } srest(sELEMENT *vary, int pos);
- * Return array, size pair of rest of array beginning at pos.  If
- * pos is past end of array, gives size of 0.
- */
-#define srest(a, p) ((a) + (p)), (((p) > sLEN(a)) ? 0 : sLen(a) - (p))
-
-/* { sELEMENT *, int } spart(sELEMENT *vary, int pos, int len);
- * Return array,size pair of 'len' elements of array beginning with pos.  If
- * pos is past end of array, gives size of 0.  If pos+len is past end of array,
- * returns number of elements to end of array.
- */
-#define spart(a, p, l) \
- ((a) + (p)), ((p) >= sLEN(a) ? 0 : ((p) + (l) > sLen(a) ? sLen(a) - (p) : (l)))
-
-/* sELEMENT vsget(sELEMENT *vary, int pos);
- * Get an element from an array.  Any value of pos is valid; if it's past the
- * end of the array or if 'vary' is 0, the terminator is returned.  This
- * does not make a duplicate of the returned element.  If you want that, pass
- * the return value of this to sdup.
- */
-#define vsget(a, p) ((p) >= sLEN(a) ? sterm : (a)[p])
-
 /**********************/
 /* Insertion/Deletion */
 /**********************/
-#ifdef junk
-/* sELEMENT *vsins(sELEMENT *vary, int pos, int n));
- * Insert n empty slots into the array.  If 'pos' >= the length of the array,
- * the array is simply extended.  The new slots are not set to anything.
- * This does not set the elements in the created hole to any particular
- * value: use vsfill if you need that to occur.
- */
-sELEMENT *vsins(sELEMENT *vary, ptrdiff_t pos, ptrdiff_t n);
-
-/* sELEMENT *vsdel(sELEMENT *vary, int pos, int n));
- * Delete n slots from the array.  This does not zap the elements first; call
- * vszap first if you need this to happen.
- */
-sELEMENT *vsdel(SELEMENT *vary, ptrdiff_t pos, ptrdiff_t n);
-
-/*************************/
-/* Searching and Sorting */
-/*************************/
-
-/* sELEMENT *vssort(sELEMENT *ary, int len))
- * Sort the elements of an array (char or variable length) using qsort().
- */
-sELEMENT *vssort(sELEMENT *ary, ptrdiff_t len);
-#endif
-
-#ifdef junk
-/* int vsfirst(sELEMENT *ary, int len, sELEMENT element);
- * Find offset to first matching element in 'vary' or return ~0 if not found.
- */
-ptrdiff_t vsfirst(sELEMENT *ary, ptrdiff_t len, sELEMENT element);
-
-/* int vslast(sELEMENT *ary, int len, sELEMENT element);
- * Find offset to last matching element in 'vary' or return ~0 if none found.
- */
-ptrdiff_t vslast(sELEMENT *ary, ptrdiff_t len, sELEMENT element);
-
-/* int vss(sELEMENT *a, int alen, sELEMENT *b, int blen);
- * Do a substring search on 'a'.  Return offset from 'a' to first matching
- * occurrence of 'b' in 'a' or return ~0 if none found.
- */
-ptrdiff_t vss(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen);
-#endif
 
 /* int vscmp(sELEMENT *a, sELEMENT *b);
  *
@@ -337,23 +273,6 @@ ptrdiff_t vss(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen);
  */
 int vscmp(sELEMENT *a, sELEMENT *b);
 
-#ifdef junk
-/* int vsicmpn(sELEMENT *a, int alen, sELEMENT *b, int blen);
- *
- * Compare two arrays using sicmp.  If 'a' > 'b', return 1.  If 'a' == 'b',
- * return 0.  If 'a' < 'b', return -1.  Longer strings are > shorter ones if
- * their beginning match.
- *
- * This is same as vscmpn except that it is case insensitive.
- */
-int vsicmpn(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen);
-
-/* int vsicmp(sELEMENT *a, sELEMENT *b);
- *
- * Functionalized version of: vsicmpn(sv(a), sv(b));
- */
-int vsicmp(sELEMENT *a, sELEMENT *b);
-#endif
 /* int vsscan(sELEMENT *a, int alen, sELEMENT *b, int blen);
  * Find offset of first matching element in 'a' which matches any
  * of the elements passed in 'b'.  Array 'b' must be sorted.
@@ -371,28 +290,3 @@ ptrdiff_t vsspan(const sELEMENT *a, ptrdiff_t alen, const sELEMENT *b, ptrdiff_t
 /***************/
 /* Other stuff */
 /***************/
-#ifdef junk
-/* char *vsread(char *d, int p, int (*getC)(void *ptr), void *ptr);
- * Replace 'd' with next line read from read-character function 'getC'.  If 
- * 'd' is 0, a new string is allocated.  If there is no more input, the string
- * is freed and 0 is returned.  The \n is deleted from the entered line.
- *
- * 'ptr' is passed as the first arg to 'getC'.  'getC' should return -1 if
- * there is no more input.
- */
-char *vsread();
-
-/* char *vwords(char *s, char **a, int len, char t);
- *
- * Generate a 't'-separated word list from the words in the zero-terminated
- * array of zero-terminated strings 'a'.  For example a simple 'echo.c':
- *
- * main(argc, argv)
- * char *argv[];
- * {
- * printf("%s\n",vwords(NULL,argv,argc,' ')):
- * }
- *
- */
-char *vwords();
-#endif

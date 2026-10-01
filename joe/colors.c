@@ -20,8 +20,6 @@
 
 #define COLORSET_GUI		0x1000000
 
-static char **get_colors(void);
-
 static int parse_color_spec(const char **, struct color_spec *);
 
 /* Current scheme globals */
@@ -90,7 +88,6 @@ static char *preprocess_line(char *p, char *buf, struct color_macro *macros);
 #define SWAP_COLOR(c)	(((c) & ~(FG_MASK | BG_MASK)) | \
                          ((((c) & BG_MASK) >> BG_SHIFT) << FG_SHIFT) | \
                          ((((c) & FG_MASK) >> FG_SHIFT) << BG_SHIFT))
-
 
 /* Allocate a color set */
 static COLORSET *colorset_alloc(void)
@@ -718,12 +715,6 @@ static int findpal(int *palette, int startidx, int endidx, int color)
 	}
 	
 	return -1;
-}
-
-/* Create a list of all available schemes */
-static char **get_colors(void)
-{
-	return find_configs(NULL, "jcf", "colors", "colors");
 }
 
 /* Apply the specified scheme */
