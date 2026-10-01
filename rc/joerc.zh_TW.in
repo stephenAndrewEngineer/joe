@@ -622,6 +622,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 \i \i 2+3:ins 多重指令              avg dev  平均、標準差                        \|\i \i
 \i \i    e pi 常數                  \u運算符號\u                                     \|\i \i
 \i \i     ans 前一個結果            ! ^  * / %  + -  < <= > >= == !=  &&  ||  ? :\|\i \i
+\i \i                               數學函數、^、dev 需 JOE_MATH_FUNCS 編譯選項  \|\i \i
 }
 
 {Names

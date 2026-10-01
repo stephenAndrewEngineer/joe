@@ -647,7 +647,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
   \bint floor ceil abs\b                                                      \| 
   \berf erfc j0 j1 y0 y1\b                                                    \| 
   \bjoe(..macro..)\b - runs an editor macro                                   \| 
-                                                                              \| 
+  \bJOE_MATH_FUNCS\b build needed for these (except \bint abs e pi\b) and \b^\b           \| 
                                  \bEsc .\b for statistics                     \| 
 }
 
@@ -661,6 +661,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
   \bdev\b  all data present            \bLR rLR\b Power regression       y=b*x^m      \| 
   \bsamp\b sample of data present      Side effects: \bb\b, \bm\b: regression coef.       \| 
                                        \br\b: correlation coef., \bcov\b: covariance  \| 
+  \bdev\b, \bsamp\b and regressions need the \bJOE_MATH_FUNCS\b build option                \| 
 }
 
 {Names
